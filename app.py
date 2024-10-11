@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from config import Config
 from models import User, Patient, Report, Doctor
-from forms import LoginForm
+from forms import LoginForm, ReportForm
 from database import db, init_db
 
 def create_app():
@@ -52,10 +52,10 @@ def doctor_page():
 
 @app.route('/nurse')
 def nurse_page():
-    role = session.get('role')  # Debugging
-    print(f"Current session role: {role}")  # Check role
+    role = session.get('role')
     if role == 'nurse':
-        return render_template('nurse.html')
+        form = ReportForm()  # Create an instance of the form
+        return render_template('nurse.html', form=form)  # Pass form to template
     return redirect(url_for('login'))
 
 
@@ -63,6 +63,104 @@ def nurse_page():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+@app.route('/nurse/patients')
+def get_patients():
+    patients = Patient.query.all()  # Assuming you're querying all patients
+    return jsonify([{'patient_id': p.patient_id, 'name': f"{p.first_name} {p.last_name}"} for p in patients])
+
+
+@app.route('/nurse/reports/<int:patient_id>')
+def get_patient_reports(patient_id):
+    if session.get('role') != 'nurse':
+        return redirect(url_for('login'))
+
+    reports = Report.query.filter_by(patient_id=patient_id).all()
+    return jsonify([{
+        'report_id': r.report_id,
+        'mood_level': r.mood_level,
+        'anxiety_level': r.anxiety_level,
+        'sleep_quality': r.sleep_quality,
+        'appetite_level': r.appetite_level,
+        'medication_adherence': r.medication_adherence,
+        'psychotic_symptoms': r.psychotic_symptoms,
+        'behavioral_observations': r.behavioral_observations,
+        'comments': r.comments
+    } for r in reports])
+
+@app.route('/nurse/add_report_ajax', methods=['POST'])
+def add_report_ajax():
+    if session.get('role') != 'nurse':
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+    data = request.get_json()  # Retrieve JSON data from the request
+    if not data:
+        return jsonify({'success': False, 'error': 'No data provided'}), 400
+
+    # Validate required fields
+    required_fields = [
+        'patient_id', 'mood_level', 'anxiety_level', 'sleep_quality', 
+        'appetite_level', 'medication_adherence', 'psychotic_symptoms'
+    ]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'success': False, 'error': f'Missing field: {field}'}), 400
+
+    # Check data types and constraints
+    try:
+        patient_id = int(data['patient_id'])
+        mood_level = int(data['mood_level'])
+        anxiety_level = int(data['anxiety_level'])
+        appetite_level = int(data['appetite_level'])
+        sleep_quality = data['sleep_quality']
+        medication_adherence = bool(data['medication_adherence'])
+        psychotic_symptoms = bool(data['psychotic_symptoms'])
+
+        # Validate ranges
+        if not (1 <= mood_level <= 10):
+            return jsonify({'success': False, 'error': 'Mood level must be between 1 and 10'}), 400
+        if not (1 <= anxiety_level <= 10):
+            return jsonify({'success': False, 'error': 'Anxiety level must be between 1 and 10'}), 400
+        if not (1 <= appetite_level <= 10):
+            return jsonify({'success': False, 'error': 'Appetite level must be between 1 and 10'}), 400
+        if sleep_quality not in ['good', 'average', 'bad']:
+            return jsonify({'success': False, 'error': 'Sleep quality must be one of: good, average, bad'}), 400
+
+        # Create new report instance
+        new_report = Report(
+            patient_id=patient_id,
+            nurse_id=session['user_id'],
+            mood_level=mood_level,
+            anxiety_level=anxiety_level,
+            sleep_quality=sleep_quality,
+            appetite_level=appetite_level,
+            medication_adherence=medication_adherence,
+            psychotic_symptoms=psychotic_symptoms,
+            behavioral_observations=data.get('behavioral_observations', ''),
+            comments=data.get('comments', '')
+        )
+
+        db.session.add(new_report)
+        db.session.commit()
+
+        # Respond with success and data about the newly added report
+        return jsonify({'success': True, 'report': {
+            'mood_level': new_report.mood_level,
+            'anxiety_level': new_report.anxiety_level,
+            'sleep_quality': new_report.sleep_quality,
+            'appetite_level': new_report.appetite_level,
+            'medication_adherence': new_report.medication_adherence,
+            'psychotic_symptoms': new_report.psychotic_symptoms,
+            'behavioral_observations': new_report.behavioral_observations,
+            'comments': new_report.comments
+        }})
+
+    except (ValueError, TypeError) as e:
+        return jsonify({'success': False, 'error': f'Invalid data: {str(e)}'}), 400
+
+    # If validation fails for any reason, return this response
+    return jsonify({'success': False, 'error': 'Validation failed'}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

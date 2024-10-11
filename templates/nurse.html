@@ -5,12 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Strona pielęgniarki</title>
+    <style>
+        #patient-list {
+            height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .patient-item {
+            cursor: pointer;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        .patient-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2>Witaj, Pielęgniarko!</h2>
-        <p>Możesz dodawać i przeglądać raporty pacjentów.</p>
+        <p>Wybierz pacjenta, aby zobaczyć i edytować raporty.</p>
+
+        <div id="patient-list">
+            <!-- Patients will be dynamically loaded here -->
+        </div>
+
+        <div id="report-section" style="margin-top: 20px;">
+            <h3>Raporty pacjenta</h3>
+            <div id="report-list">
+                <!-- Reports will be dynamically loaded here -->
+            </div>
+            <form id="report-form" method="POST" style="display:none;">
+                {{ form.hidden_tag() }}
+                <input type="hidden" id="patient_id" name="patient_id" value="">
+                {{ form.mood_level.label }} {{ form.mood_level() }}<br>
+                {{ form.anxiety_level.label }} {{ form.anxiety_level() }}<br>
+                {{ form.sleep_quality.label }} {{ form.sleep_quality() }}<br>
+                {{ form.appetite_level.label }} {{ form.appetite_level() }}<br>
+                {{ form.medication_adherence.label }} {{ form.medication_adherence() }}<br>
+                {{ form.psychotic_symptoms.label }} {{ form.psychotic_symptoms() }}<br>
+                {{ form.behavioral_observations.label }} {{ form.behavioral_observations() }}<br>
+                {{ form.comments.label }} {{ form.comments() }}<br>
+                <button type="button" id="save-report">Zapisz Raport</button>
+            </form>
+        </div>
+
         <a href="{{ url_for('logout') }}">Wyloguj się</a>
     </div>
+
+    <script>
+        // Load patients
+        fetch('{{ url_for("get_patients") }}')
+        .then(response => response.json())
+        .then(data => {
+            const patientList = document.getElementById('patient-list');
+            data.forEach(patient => {
+                const div = document.createElement('div');
+                div.className = 'patient-item';
+                div.innerText = patient.name;
+                div.dataset.patientId = patient.patient_id;
+                div.onclick = () => loadPatientReports(patient.patient_id);
+                patientList.appendChild(div);
+            });
+        });
+
+        // Load patient reports
+        function loadPatientReports(patient_id) {
+            document.getElementById('patient_id').value = patient_id;
+            fetch(`/nurse/reports/${patient_id}`)
+            .then(response => response.json())
+            .then(data => {
+                const reportList = document.getElementById('report-list');
+                reportList.innerHTML = '';  // Clear previous reports
+                if (data.length === 0) {
+                    reportList.innerHTML = '<p>No reports found for this patient.</p>';
+                } else {
+                    data.forEach(report => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p>Raport ID: ${report.report_id}, Mood Level: ${report.mood_level}, Anxiety Level: ${report.anxiety_level}</p>`;
+                        reportList.appendChild(div);
+                    });
+                }
+                document.getElementById('report-form').style.display = 'block';  // Show form for new report
+            });
+        }
+
+        // Save a new report
+        document.getElementById('save-report').addEventListener('click', function() {
+            const formData = new FormData(document.getElementById('report-form'));
+            fetch('{{ url_for("add_report_ajax") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Raport dodany pomyślnie!');
+                    loadPatientReports(document.getElementById('patient_id').value);  // Reload reports for the selected patient
+                    document.getElementById('report-form').reset();  // Clear form fields
+                } else {
+                    alert('Błąd podczas dodawania raportu.');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
