@@ -53,21 +53,4 @@ CREATE TABLE IF NOT EXISTS Reports (
     FOREIGN KEY (nurse_id) REFERENCES Users(user_id)  -- Foreign key to users
 );
 
-INSERT INTO Users (username, password, role) VALUES 
-('nurse1', '', 'nurse'),
-('doctor1', '', 'doctor'),
-('doctor2', '', 'doctor');
-
--- Populate Doctors table
-INSERT INTO Doctors (user_id, specialization) VALUES 
-(2, 'Psychiatry'),  -- Assigning doctor1
-(3, 'Clinical Psychology');  -- Assigning doctor2
-
--- Populate Patients table
-INSERT INTO Patients (first_name, last_name, date_of_birth, gender, assigned_doctor_id) VALUES 
-('John', 'Doe', '1990-01-01', 'male', 1),  
-('Jane', 'Smith', '1985-05-15', 'female', 2),
-('Alice', 'Johnson', '2000-08-20', 'female', 1),
-('Bob', 'Brown', '1975-11-30', 'male', 2),
-('Charlie', 'Davis', '1995-02-10', 'other', 1);
 

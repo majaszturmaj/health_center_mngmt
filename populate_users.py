@@ -44,11 +44,11 @@ with app.app_context():  # Create application context
 
     # Add example patients assigned to the correct doctors by doctor_id
     patients = [
-        {'first_name': 'John', 'last_name': 'Doe', 'date_of_birth': '1990-01-01', 'gender': 'male', 'assigned_doctor_id': doctor_objects[0].doctor_id},
-        {'first_name': 'Jane', 'last_name': 'Smith', 'date_of_birth': '1985-05-15', 'gender': 'female', 'assigned_doctor_id': doctor_objects[1].doctor_id},
-        {'first_name': 'Alice', 'last_name': 'Johnson', 'date_of_birth': '2000-08-20', 'gender': 'female', 'assigned_doctor_id': doctor_objects[0].doctor_id},
-        {'first_name': 'Bob', 'last_name': 'Brown', 'date_of_birth': '1975-11-30', 'gender': 'male', 'assigned_doctor_id': doctor_objects[1].doctor_id},
-        {'first_name': 'Charlie', 'last_name': 'Davis', 'date_of_birth': '1995-02-10', 'gender': 'other', 'assigned_doctor_id': doctor_objects[0].doctor_id}
+        {'first_name': 'Wacław', 'last_name': 'Kazimierz', 'date_of_birth': '1990-01-01', 'gender': 'male', 'assigned_doctor_id': doctor_objects[0].doctor_id},
+        {'first_name': 'Emilia', 'last_name': 'Walewska', 'date_of_birth': '1985-05-15', 'gender': 'female', 'assigned_doctor_id': doctor_objects[1].doctor_id},
+        {'first_name': 'Alicja', 'last_name': 'Kopytko', 'date_of_birth': '2000-08-20', 'gender': 'female', 'assigned_doctor_id': doctor_objects[0].doctor_id},
+        {'first_name': 'Ziemowit', 'last_name': 'Twaróg', 'date_of_birth': '1975-11-30', 'gender': 'male', 'assigned_doctor_id': doctor_objects[1].doctor_id},
+        {'first_name': 'Jude', 'last_name': 'Twaróg', 'date_of_birth': '1995-02-10', 'gender': 'other', 'assigned_doctor_id': doctor_objects[0].doctor_id}
     ]
 
     for patient_data in patients:
@@ -64,3 +64,4 @@ with app.app_context():  # Create application context
     db.session.commit()  # Commit patients
 
     print("Users, doctors, and patients have been successfully added.")
+    import generate_reports  # Add this line at the end of your populate_users.py script
