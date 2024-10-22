@@ -9,12 +9,13 @@ class LoginForm(FlaskForm):
 
 
 class ReportForm(FlaskForm):
-    mood_level = IntegerField('Mood Level', validators=[DataRequired(), NumberRange(min=1, max=10)])
-    anxiety_level = IntegerField('Anxiety Level', validators=[DataRequired(), NumberRange(min=1, max=10)])
-    sleep_quality = SelectField('Sleep Quality', choices=[('good', 'Good'), ('average', 'Average'), ('bad', 'Bad')], validators=[DataRequired()])
-    appetite_level = IntegerField('Appetite Level', validators=[DataRequired(), NumberRange(min=1, max=10)])
-    medication_adherence = BooleanField('Medication Adherence', validators=[DataRequired()])
-    psychotic_symptoms = BooleanField('Psychotic Symptoms', validators=[DataRequired()])
-    behavioral_observations = TextAreaField('Behavioral Observations')
-    comments = TextAreaField('Comments')
+    title = StringField('Tytuł Raportu', validators=[DataRequired()]) 
+    mood_level = IntegerField('Poziom Samopoczucia', validators=[DataRequired(), NumberRange(min=1, max=10)])
+    anxiety_level = IntegerField('Poziom Lęku', validators=[DataRequired(), NumberRange(min=1, max=10)])
+    sleep_quality = SelectField('Jakość Snu', choices=[('good', 'Good'), ('average', 'Average'), ('bad', 'Bad')], validators=[DataRequired()])
+    appetite_level = IntegerField('Poziom Apetytu', validators=[DataRequired(), NumberRange(min=1, max=10)])
+    medication_adherence = BooleanField('Przyjmowanie Leków ', validators=[DataRequired()])
+    psychotic_symptoms = BooleanField('Objawy Psychotyczne', validators=[DataRequired()])
+    behavioral_observations = TextAreaField('Obserwacje Behawioralne')
+    comments = TextAreaField('Komentarze')
     submit = SubmitField('Submit')

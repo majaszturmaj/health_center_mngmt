@@ -50,6 +50,29 @@ def doctor_page():
         return render_template('doctor.html')
     return redirect(url_for('login'))
 
+@app.route('/doctor/patients')
+def get_patients0():
+    patients = Patient.query.all()  # Assuming you're querying all patients
+    return jsonify([{'patient_id': p.patient_id, 'name': f"{p.first_name} {p.last_name}"} for p in patients])
+
+@app.route('/doctor/reports/<int:patient_id>')
+def get_patient_reports0(patient_id):
+    if session.get('role') != 'doctor':
+        return redirect(url_for('login'))
+
+    reports = Report.query.filter_by(patient_id=patient_id).all()
+    return jsonify([{
+        'report_id': r.report_id,
+        'mood_level': r.mood_level,
+        'anxiety_level': r.anxiety_level,
+        'sleep_quality': r.sleep_quality,
+        'appetite_level': r.appetite_level,
+        'medication_adherence': r.medication_adherence,
+        'psychotic_symptoms': r.psychotic_symptoms,
+        'behavioral_observations': r.behavioral_observations,
+        'comments': r.comments
+    } for r in reports])
+
 @app.route('/nurse')
 def nurse_page():
     role = session.get('role')
@@ -65,13 +88,13 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/nurse/patients')
-def get_patients():
+def get_patients1():
     patients = Patient.query.all()  # Assuming you're querying all patients
     return jsonify([{'patient_id': p.patient_id, 'name': f"{p.first_name} {p.last_name}"} for p in patients])
 
 
 @app.route('/nurse/reports/<int:patient_id>')
-def get_patient_reports(patient_id):
+def get_patient_reports1(patient_id):
     if session.get('role') != 'nurse':
         return redirect(url_for('login'))
 
