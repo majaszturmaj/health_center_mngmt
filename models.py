@@ -29,6 +29,7 @@ class Patient(db.Model):
     patient_id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(20), nullable=False)
     admission_date = db.Column(db.DateTime, default=db.func.current_timestamp())

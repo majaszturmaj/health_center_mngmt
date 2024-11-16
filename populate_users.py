@@ -44,17 +44,18 @@ with app.app_context():  # Create application context
 
     # Add example patients assigned to the correct doctors by doctor_id
     patients = [
-        {'first_name': 'Wacław', 'last_name': 'Kazimierz', 'date_of_birth': '1990-01-01', 'gender': 'male', 'assigned_doctor_id': doctor_objects[0].doctor_id},
-        {'first_name': 'Emilia', 'last_name': 'Walewska', 'date_of_birth': '1985-05-15', 'gender': 'female', 'assigned_doctor_id': doctor_objects[1].doctor_id},
-        {'first_name': 'Alicja', 'last_name': 'Kopytko', 'date_of_birth': '2000-08-20', 'gender': 'female', 'assigned_doctor_id': doctor_objects[0].doctor_id},
-        {'first_name': 'Ziemowit', 'last_name': 'Twaróg', 'date_of_birth': '1975-11-30', 'gender': 'male', 'assigned_doctor_id': doctor_objects[1].doctor_id},
-        {'first_name': 'Jude', 'last_name': 'Twaróg', 'date_of_birth': '1995-02-10', 'gender': 'other', 'assigned_doctor_id': doctor_objects[0].doctor_id}
+        {'first_name': 'Wacław', 'last_name': 'Kazimierz', 'email':'kawac@kawoc.com', 'date_of_birth': '1990-01-01', 'gender': 'male', 'assigned_doctor_id': doctor_objects[0].doctor_id},
+        {'first_name': 'Emilia', 'last_name': 'Walewska', 'email':'kmrkfen@jkekvfk.erfee', 'date_of_birth': '1985-05-15', 'gender': 'female', 'assigned_doctor_id': doctor_objects[1].doctor_id},
+        {'first_name': 'Alicja', 'last_name': 'Kopytko', 'email':'kmrkfen@jkekvfk2.erfee','date_of_birth': '2000-08-20', 'gender': 'female', 'assigned_doctor_id': doctor_objects[0].doctor_id},
+        {'first_name': 'Ziemowit', 'last_name': 'Twaróg', 'email':'kmrkfen@jkekvfk3.erfee','date_of_birth': '1975-11-30', 'gender': 'male', 'assigned_doctor_id': doctor_objects[1].doctor_id},
+        {'first_name': 'Jude', 'last_name': 'Twaróg','email':'maja.szturmaj@gmail.com', 'date_of_birth': '1995-02-10', 'gender': 'other', 'assigned_doctor_id': doctor_objects[0].doctor_id}
     ]
 
     for patient_data in patients:
         patient = Patient(
             first_name=patient_data['first_name'],
             last_name=patient_data['last_name'],
+            email=patient_data['email'],
             date_of_birth=patient_data['date_of_birth'],
             gender=patient_data['gender'],
             assigned_doctor_id=patient_data['assigned_doctor_id']

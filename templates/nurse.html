@@ -201,6 +201,30 @@
                         <button type="submit" class="submit-btn">Zapisz Raport</button>
                     </form>
                 </div>
+
+                <div id="edit-report-modal" style="display:none;">
+                    <form id="edit-report-form">
+                        <input type="hidden" id="edit-report-id">
+                        <label for="edit-mood-level">Poziom nastroju:</label>
+                        <input type="text" id="edit-mood-level">
+                        <label for="edit-anxiety-level">Poziom lęku:</label>
+                        <input type="text" id="edit-anxiety-level">
+                        <label for="edit-sleep-quality">Jakość snu:</label>
+                        <input type="text" id="edit-sleep-quality">
+                        <label for="edit-appetite-level">Apetyt:</label>
+                        <input type="text" id="edit-appetite-level">
+                        <label for="edit-medication-adherence">Przyjmowanie leków:</label>
+                        <input type="checkbox" id="edit-medication-adherence">
+                        <label for="edit-psychotic-symptoms">Objawy psychotyczne:</label>
+                        <input type="checkbox" id="edit-psychotic-symptoms">
+                        <label for="edit-behavioral-observations">Obserwacje:</label>
+                        <textarea id="edit-behavioral-observations"></textarea>
+                        <label for="edit-comments">Komentarze:</label>
+                        <textarea id="edit-comments"></textarea>
+                        <button type="submit">Zapisz</button>
+                        <button type="button" onclick="closeEditModal()">Anuluj</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -254,6 +278,7 @@ function selectPatient(patientId, element) {
                         <p>Objawy psychotyczne: ${report.psychotic_symptoms ? 'Tak' : 'Nie'}</p>
                         <p>Obserwacje: ${report.behavioral_observations}</p>
                         <p>Komentarze: ${report.comments}</p>
+                        <button onclick="editReport(${report.report_id})">Edytuj</button>
                     </div>
                 </div>
             `;
@@ -265,6 +290,57 @@ function selectPatient(patientId, element) {
     }
 }
 
+function editReport(reportId) {
+    const report = document.querySelector(`#report-details-${reportId}`);
+    document.getElementById('edit-report-id').value = reportId;
+    document.getElementById('edit-mood-level').value = report.querySelector('p:nth-child(1)').textContent.split(': ')[1];
+    document.getElementById('edit-anxiety-level').value = report.querySelector('p:nth-child(2)').textContent.split(': ')[1];
+    document.getElementById('edit-sleep-quality').value = report.querySelector('p:nth-child(3)').textContent.split(': ')[1];
+    document.getElementById('edit-appetite-level').value = report.querySelector('p:nth-child(4)').textContent.split(': ')[1];
+    document.getElementById('edit-medication-adherence').checked = report.querySelector('p:nth-child(5)').textContent.split(': ')[1] === 'Tak';
+    document.getElementById('edit-psychotic-symptoms').checked = report.querySelector('p:nth-child(6)').textContent.split(': ')[1] === 'Tak';
+    document.getElementById('edit-behavioral-observations').value = report.querySelector('p:nth-child(7)').textContent.split(': ')[1];
+    document.getElementById('edit-comments').value = report.querySelector('p:nth-child(8)').textContent.split(': ')[1];
+    document.getElementById('edit-report-modal').style.display = 'block';
+}
+
+document.getElementById('edit-report-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const reportId = document.getElementById('edit-report-id').value;
+    const updatedReport = {
+        mood_level: document.getElementById('edit-mood-level').value,
+        anxiety_level: document.getElementById('edit-anxiety-level').value,
+        sleep_quality: document.getElementById('edit-sleep-quality').value,
+        appetite_level: document.getElementById('edit-appetite-level').value,
+        medication_adherence: document.getElementById('edit-medication-adherence').checked,
+        psychotic_symptoms: document.getElementById('edit-psychotic-symptoms').checked,
+        behavioral_observations: document.getElementById('edit-behavioral-observations').value,
+        comments: document.getElementById('edit-comments').value
+    };
+
+    try {
+        const response = await fetch(`/nurse/reports/${reportId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedReport)
+        });
+
+        if (response.ok) {
+            loadReports(document.querySelector('.patient-item.active').dataset.patientId);
+            closeEditModal();
+        } else {
+            console.error('Failed to update report');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+function closeEditModal() {
+    document.getElementById('edit-report-modal').style.display = 'none';
+}
         // Funkcja do przełączania widoczności szczegółów raportu
 function toggleReportDetails(reportId, event) {
 const detailsElement = document.getElementById(`report-details-${reportId}`);

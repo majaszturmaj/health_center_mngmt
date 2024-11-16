@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS Patients (
     patient_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     date_of_birth DATE NOT NULL,
     gender ENUM('male', 'female', 'other') NOT NULL,  -- Patient's gender
     admission_date DATETIME DEFAULT CURRENT_TIMESTAMP,

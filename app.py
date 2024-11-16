@@ -4,6 +4,12 @@ from models import User, Patient, Report, Doctor
 from forms import LoginForm, ReportForm
 from database import db, init_db
 from datetime import datetime
+from flask_mail import Mail, Message
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+
 
 def create_app():
     app = Flask(__name__)
@@ -64,6 +70,7 @@ def get_patient_reports0(patient_id):
 
     reports = Report.query.filter_by(patient_id=patient_id).all()
     return jsonify([{
+        'report_date' : r.report_date,
         'report_id': r.report_id,
         'mood_level': r.mood_level,
         'anxiety_level': r.anxiety_level,
@@ -167,6 +174,46 @@ def add_report():
             return jsonify({'success': False, 'error': str(e)}), 500
     
     return jsonify({'success': False, 'error': 'Validation failed', 'errors': form.errors}), 400
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  # Adres e-mail zdefiniowany w zmiennej środowiskowej
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  # Hasło zdefiniowane w zmiennej środowiskowej
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+
+@app.route('/doctor/send_prescription/<int:patient_id>', methods=['POST'])
+def send_prescription(patient_id):
+    data = request.get_json()
+    prescription_text = data.get('prescription')
+    
+    # Pobierz pacjenta z bazy danych
+    patient = Patient.query.get(patient_id)
+    if not patient:
+        return jsonify({'success': False, 'message': 'Pacjent nie znaleziony'}), 404
+    
+    # Przygotowanie wiadomości e-mail
+    msg = Message('E-Recepta',
+                  sender='your_email@gmail.com',
+                  recipients=[patient.email])
+    msg.body = f'''
+    Pacjent: {patient.first_name} {patient.last_name},
+    Dnia: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    Wystawiona e-recepta:
+
+    {prescription_text}
+
+    Pozdrawiam,
+    Twój lekarz
+    '''
+    
+    try:
+        mail.send(msg)
+        return jsonify({'success': True, 'message': 'E-Recepta wysłana pomyślnie'}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

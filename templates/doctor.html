@@ -161,14 +161,14 @@
                     </div>
                 </div>
 
-                <div class="doctor-notes">
-                    <h2>Notatki Lekarza</h2>
-                    <form id="doctor-notes-form">
+                <div class="prescription">
+                    <h2>Wystawienie E-Recepty</h2>
+                    <form id="prescription-form">
                         <div class="form-group">
-                            <label for="doctor-notes">Dodaj Notatki</label>
-                            <textarea id="doctor-notes" rows="5" placeholder="Wpisz swoje notatki tutaj..."></textarea>
+                            <label for="prescription-text">Wpisz leki i zalecenia</label>
+                            <textarea id="prescription-text" rows="5" placeholder="Wpisz leki i zalecenia..."></textarea>
                         </div>
-                        <button type="submit" class="submit-btn">Zapisz Notatki</button>
+                        <button type="submit" class="submit-btn">Wyślij E-Receptę</button>
                     </form>
                 </div>
             </div>
@@ -176,55 +176,93 @@
     </div>
 
     <script>
-        // Funkcja do pobierania i wyświetlania listy pacjentów
+        let selectedPatientId = null; // Global variable to store the selected patient ID
+
         async function loadPatients() {
             const response = await fetch('/nurse/patients');
             const patients = await response.json();
             const patientList = document.getElementById('patient-list');
             
             patientList.innerHTML = patients.map(patient => `
-                <div class="patient-item" onclick="loadReports(${patient.patient_id})">
+                <div class="patient-item" onclick="loadReports(${patient.patient_id}, this)">
                     ${patient.name}
                 </div>
             `).join('');
         }
 
-        // Funkcja do pobierania i wyświetlania raportów dla wybranego pacjenta
-        async function loadReports(patientId) {
-            const response = await fetch(`/nurse/reports/${patientId}`);
-            const reports = await response.json();
-            const reportList = document.getElementById('report-list');
-            
-            reportList.innerHTML = reports.map(report => `
-                <div class="report-card" onclick="toggleReportDetails(${report.id}, event)">
-                    <strong>${report.title}</strong>
-                    <div id="report-details-${report.id}" class="report-details">
-                        <p>Poziom nastroju: ${report.mood_level}</p>
-                        <p>Poziom lęku: ${report.anxiety_level}</p>
-                        <p>Jakość snu: ${report.sleep_quality}</p>
-                        <p>Apetyt: ${report.appetite_level}</p>
-                        <p>Przyjmowanie leków: ${report.medication_adherence ? 'Tak' : 'Nie'}</p>
-                        <p>Objawy psychotyczne: ${report.psychotic_symptoms ? 'Tak' : 'Nie'}</p>
-                        <p>Obserwacje: ${report.behavioral_observations}</p>
-                        <p>Komentarze: ${report.comments}</p>
-                    </div>
-                </div>
-            `).join('');
-
-            // Zaznacz wybranego pacjenta
-            document.querySelectorAll('.patient-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
+        async function loadReports(patientId, patientElement) {
+            selectedPatientId = patientId; // Store the selected patient ID
+            try {
+                const response = await fetch(`/doctor/reports/${patientId}`);
+                const reports = await response.json();
+                const reportList = document.getElementById('report-list');
+                
+                reportList.innerHTML = reports.map(report => {
+                    const reportDate = new Date(report.report_date);
+                    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    const formattedDate = reportDate.toLocaleDateString('pl-PL', options);
+                    return `
+                        <div class="report-card" onclick="toggleReportDetails(${report.report_id}, this)">
+                            <strong>Raport o id ${report.report_id} z dnia ${formattedDate}</strong>
+                            <div class="report-details" id="report-details-${report.report_id}">
+                                <p>Poziom nastroju: ${report.mood_level}</p>
+                                <p>Poziom lęku: ${report.anxiety_level}</p>
+                                <p>Jakość snu: ${report.sleep_quality}</p>
+                                <p>Apetyt: ${report.appetite_level}</p>
+                                <p>Przyjmowanie leków: ${report.medication_adherence ? 'Tak' : 'Nie'}</p>
+                                <p>Objawy psychotyczne: ${report.psychotic_symptoms ? 'Tak' : 'Nie'}</p>
+                                <p>Obserwacje: ${report.behavioral_observations}</p>
+                                <p>Komentarze: ${report.comments}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
 
-        // Funkcja do przełączania widoczności szczegółów raportu
-        function toggleReportDetails(reportId, event) {
+        function toggleReportDetails(reportId, element) {
             const detailsElement = document.getElementById(`report-details-${reportId}`);
             detailsElement.style.display = detailsElement.style.display === 'none' || detailsElement.style.display === '' ? 'block' : 'none';
         }
 
-        // Załaduj listę pacjentów przy starcie
+        async function sendPrescription(patientId) {
+            if (!selectedPatientId) {
+                alert("Wybierz pacjenta przed wysłaniem e-recepty.");
+                return;
+            }
+
+            const prescriptionText = document.getElementById('prescription-text').value;
+            
+            if (!prescriptionText) {
+                alert("Proszę wpisać leki i zalecenia.");
+                return;
+            }
+            
+            const response = await fetch(`/doctor/send_prescription/${selectedPatientId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prescription: prescriptionText
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert("E-Recepta została wysłana!");
+            } else {
+                alert("Wystąpił błąd podczas wysyłania e-recepty.");
+            }
+        }
+
+        document.getElementById('prescription-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            sendPrescription(selectedPatientId);
+        });
+
         document.addEventListener('DOMContentLoaded', loadPatients);
     </script>
 </body>
