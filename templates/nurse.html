@@ -220,38 +220,37 @@
         }
 
         // Funkcja do pobierania i wyświetlania raportów dla wybranego pacjenta
-async function loadReports(patientId) {
-    const response = await fetch(`/nurse/reports/${patientId}`);
-    const reports = await response.json();
-    const reportList = document.getElementById('report-list');
-    
-    reportList.innerHTML = reports.map(report => {
-        const reportDate = new Date(report.report_date); // Data wystawienia raportu
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const formattedDate = reportDate.toLocaleDateString('pl-PL', options); // Formatowanie daty
-
-        return `
-            <div class="report-card" onclick="toggleReportDetails(${report.id}, event)">
-                <strong>${report.title} z dnia ${formattedDate}</strong> <!-- Wyświetlanie tytułu i daty -->
-                <div id="report-details-${report.id}" class="report-details">
-                    <p>Poziom nastroju: ${report.mood_level}</p>
-                    <p>Poziom lęku: ${report.anxiety_level}</p>
-                    <p>Jakość snu: ${report.sleep_quality}</p>
-                    <p>Apetyt: ${report.appetite_level}</p>
-                    <p>Przyjmowanie leków: ${report.medication_adherence ? 'Tak' : 'Nie'}</p>
-                    <p>Objawy psychotyczne: ${report.psychotic_symptoms ? 'Tak' : 'Nie'}</p>
-                    <p>Obserwacje: ${report.behavioral_observations}</p>
-                    <p>Komentarze: ${report.comments}</p>
+        async function loadReports(patientId) {
+    try {
+        const response = await fetch(`/nurse/reports/${patientId}`);
+        const reports = await response.json();
+        console.log('Full report object:', reports[0]); 
+        
+        const reportList = document.getElementById('report-list');
+        reportList.innerHTML = reports.map(report => {
+            const reportDate = new Date(report.report_date); 
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = reportDate.toLocaleDateString('pl-PL', options);
+            return `
+                <div class="report-card" onclick="toggleReportDetails(${report.id}, event)">
+                    <strong>Raport o id ${report.report_id} z dnia ${formattedDate}</strong>
+                    <div id="report-details-${report.id}" class="report-details">
+                        <p>Poziom nastroju: ${report.mood_level}</p>
+                        <p>Poziom lęku: ${report.anxiety_level}</p>
+                        <p>Jakość snu: ${report.sleep_quality}</p>
+                        <p>Apetyt: ${report.appetite_level}</p>
+                        <p>Przyjmowanie leków: ${report.medication_adherence ? 'Tak' : 'Nie'}</p>
+                        <p>Objawy psychotyczne: ${report.psychotic_symptoms ? 'Tak' : 'Nie'}</p>
+                        <p>Obserwacje: ${report.behavioral_observations}</p>
+                        <p>Komentarze: ${report.comments}</p>
+                    </div>
                 </div>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
 
-    // Zaznacz wybranego pacjenta
-    document.querySelectorAll('.patient-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    event.currentTarget.classList.add('active');
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
         // Funkcja do przełączania widoczności szczegółów raportu

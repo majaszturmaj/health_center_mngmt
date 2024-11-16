@@ -77,8 +77,13 @@ def get_patient_reports0(patient_id):
 def nurse_page():
     role = session.get('role')
     if role == 'nurse':
-        form = ReportForm()  # Create an instance of the form
-        return render_template('nurse.html', form=form)  # Pass form to template
+        patients = Patient.query.all()
+        reports = Report.query.order_by(Report.report_date.desc()).all()
+        form = ReportForm() 
+        return render_template('nurse.html',
+                                patients=patients, 
+                                reports=reports,
+                                form=form)
     return redirect(url_for('login'))
 
 
@@ -100,6 +105,7 @@ def get_patient_reports1(patient_id):
 
     reports = Report.query.filter_by(patient_id=patient_id).all()
     return jsonify([{
+    	'report_date' : r.report_date,
         'report_id': r.report_id,
         'mood_level': r.mood_level,
         'anxiety_level': r.anxiety_level,
@@ -111,8 +117,8 @@ def get_patient_reports1(patient_id):
         'comments': r.comments
     } for r in reports])
 
-@app.route('/nurse/add_report_ajax', methods=['POST'])
-def add_report_ajax():
+@app.route('/nurse/add_report', methods=['POST'])
+def add_report():
     if session.get('role') != 'nurse':
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
 
