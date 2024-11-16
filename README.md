@@ -7,6 +7,7 @@
 pip install dotenv
 
 export MAIL_USERNAME='your_email@gmail.com'
+
 export MAIL_PASSWORD='your_password'
 
 # Dokumentacja Systemu Obsługi Pacjentów Szpitala Psychiatrycznego
@@ -24,6 +25,13 @@ export MAIL_PASSWORD='your_password'
 ## Wprowadzenie
 System służy do zarządzania pacjentami w szpitalu psychiatrycznym, umożliwiając lekarzom i pielęgniarkom prowadzenie dokumentacji medycznej, monitorowanie stanu pacjentów oraz wystawianie e-recept.
 
+![login](https://github.com/user-attachments/assets/749806e8-b0f2-4259-955e-1b2ab8f2770b)
+
+![nurse](https://github.com/user-attachments/assets/d0ea0722-1422-405a-b896-925c58ae632d)
+
+![doctor](https://github.com/user-attachments/assets/3fee05b8-8c43-4991-96fd-4c0df5152a79)
+
+
 ## Architektura systemu
 - Framework: Flask (Python)
 - Baza danych: MySQL
@@ -31,6 +39,10 @@ System służy do zarządzania pacjentami w szpitalu psychiatrycznym, umożliwia
 - Dodatkowe komponenty: Flask-Mail (obsługa e-recept)
 
 ## Struktura bazy danych
+
+![erd](https://github.com/user-attachments/assets/a0f57efa-8456-4a58-9e0c-27784bf6ab85)
+
+
 ### Tabele:
 1. **Users**
    - user_id (PK)
