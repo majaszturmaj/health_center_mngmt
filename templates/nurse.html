@@ -279,6 +279,7 @@ function selectPatient(patientId, element) {
                         <p>Obserwacje: ${report.behavioral_observations}</p>
                         <p>Komentarze: ${report.comments}</p>
                         <button onclick="editReport(${report.report_id})">Edytuj</button>
+                        <button onclick="deleteReport(${report.report_id})">Usuń</button>
                     </div>
                 </div>
             `;
@@ -289,6 +290,26 @@ function selectPatient(patientId, element) {
         console.error('Error:', error);
     }
 }
+
+async function deleteReport(reportId) {
+    if (confirm("Czy na pewno chcesz usunąć ten raport?")) {
+        try {
+            const response = await fetch(`/nurse/delete_report/${reportId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                alert("Raport został pomyślnie usunięty.");
+                loadReports(document.querySelector('.patient-item.active').dataset.patientId); // Odświeżenie listy raportów
+            } else {
+                alert("Wystąpił problem podczas usuwania raportu.");
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert("Wystąpił błąd podczas usuwania raportu.");
+        }
+    }
+}
+
 
 function editReport(reportId) {
     const report = document.querySelector(`#report-details-${reportId}`);

@@ -6,6 +6,7 @@ from database import db, init_db
 from datetime import datetime
 from flask_mail import Mail, Message
 import os
+from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user, current_user
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -175,6 +176,70 @@ def add_report():
     
     return jsonify({'success': False, 'error': 'Validation failed', 'errors': form.errors}), 400
 
+@app.route('/nurse/delete_report/<int:report_id>', methods=['DELETE'])
+# @login_required # You can use this decorator to protect the route but it is not working yet
+def delete_report(report_id):
+    report = Report.query.get(report_id)
+    if report:
+        db.session.delete(report)
+        db.session.commit()
+        return jsonify({"message": "Raport usunięty"}), 200
+    else:
+        return jsonify({"error": "Raport nie istnieje"}), 404
+
+@app.route('/nurse/reports/<int:report_id>', methods=['PUT'])
+def update_report(report_id):
+    if session.get('role') != 'nurse':
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+    
+    try:
+        report = Report.query.get(report_id)
+        if not report:
+            return jsonify({'success': False, 'error': 'Report not found'}), 404
+
+        data = request.get_json()
+        
+        # Update report fields
+        if 'mood_level' in data:
+            report.mood_level = int(data['mood_level'])
+        if 'anxiety_level' in data:
+            report.anxiety_level = int(data['anxiety_level'])
+        if 'sleep_quality' in data:
+            report.sleep_quality = data['sleep_quality']
+        if 'appetite_level' in data:
+            report.appetite_level = int(data['appetite_level'])
+        if 'medication_adherence' in data:
+            report.medication_adherence = bool(int(data['medication_adherence']))
+        if 'psychotic_symptoms' in data:
+            report.psychotic_symptoms = bool(int(data['psychotic_symptoms']))
+        if 'behavioral_observations' in data:
+            report.behavioral_observations = data['behavioral_observations']
+        if 'comments' in data:
+            report.comments = data['comments']
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Report updated successfully',
+            'report': {
+                'report_id': report.report_id,
+                'report_date': report.report_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'mood_level': report.mood_level,
+                'anxiety_level': report.anxiety_level,
+                'sleep_quality': report.sleep_quality,
+                'appetite_level': report.appetite_level,
+                'medication_adherence': report.medication_adherence,
+                'psychotic_symptoms': report.psychotic_symptoms,
+                'behavioral_observations': report.behavioral_observations,
+                'comments': report.comments
+            }
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  # Adres e-mail zdefiniowany w zmiennej środowiskowej
