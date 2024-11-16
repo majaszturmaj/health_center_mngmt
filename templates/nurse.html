@@ -243,9 +243,9 @@ function selectPatient(patientId, element) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             const formattedDate = reportDate.toLocaleDateString('pl-PL', options);
             return `
-                <div class="report-card" onclick="toggleReportDetails(${report.id}, event)">
+                <div class="report-card" onclick="toggleReportDetails(${report.report_id}, event)">
                     <strong>Raport o id ${report.report_id} z dnia ${formattedDate}</strong>
-                    <div id="report-details-${report.id}" class="report-details">
+                    <div id="report-details-${report.report_id}" class="report-details">
                         <p>Poziom nastroju: ${report.mood_level}</p>
                         <p>Poziom lęku: ${report.anxiety_level}</p>
                         <p>Jakość snu: ${report.sleep_quality}</p>
@@ -266,28 +266,32 @@ function selectPatient(patientId, element) {
 }
 
         // Funkcja do przełączania widoczności szczegółów raportu
-        function toggleReportDetails(reportId, event) {
-            const detailsElement = document.getElementById(`report-details-${reportId}`);
-            detailsElement.style.display = detailsElement.style.display === 'none' || detailsElement.style.display === '' ? 'block' : 'none';
-        }
+function toggleReportDetails(reportId, event) {
+const detailsElement = document.getElementById(`report-details-${reportId}`);
+if (detailsElement) {
+detailsElement.style.display = detailsElement.style.display === 'none' || detailsElement.style.display === '' ? 'block' : 'none';
+} else {
+console.error(`Nie znaleziono elementu o ID: report-details-${reportId}`);
+}
+}
+
 
         // Załaduj listę pacjentów przy starcie
         document.addEventListener('DOMContentLoaded', loadPatients);
-
 // Modyfikacja funkcji dodawania raportu
 document.getElementById('report-form').addEventListener('submit', async function(event) {
-    event.preventDefault();
+event.preventDefault();
+
+// Pobranie aktualnie wybranego ID pacjenta
+const patientId = document.querySelector('.patient-item.active')?.dataset.patientId;
+if (!patientId) {
+alert('Proszę wybrać pacjenta przed dodaniem raportu');
+return;
+}
     
-    // Pobranie aktualnie wybranego ID pacjenta
-    const patientId = document.querySelector('.patient-item.active')?.dataset.patientId;
-    if (!patientId) {
-        alert('Proszę wybrać pacjenta przed dodaniem raportu');
-        return;
-    }
-    
-    const form = event.target;
-    const formData = new FormData(form);
-    formData.append('patient_id', patientId);
+const form = event.target;
+const formData = new FormData(form);
+formData.append('patient_id', patientId);
     
     // Obsługa pól checkbox
     formData.set('medication_adherence', form.medication_adherence.checked ? '1' : '0');
