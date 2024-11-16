@@ -67,6 +67,7 @@ System służy do zarządzania pacjentami w szpitalu psychiatrycznym, umożliwia
    - admission_date
    - assigned_doctor_id (FK)
 
+Pola w tabeli Reports zostały stworzone tak, aby powstała baza danych zawierała dane nadające się do uczenia maszynowego czy chociażby wizualizacji.
 4. **Reports**
    - report_id (PK)
    - patient_id (FK)
