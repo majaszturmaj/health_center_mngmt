@@ -201,13 +201,19 @@
                     const reportDate = new Date(report.report_date);
                     const options = { year: 'numeric', month: 'long', day: 'numeric' };
                     const formattedDate = reportDate.toLocaleDateString('pl-PL', options);
+
+                    const moodMapping = {
+                "bad": "Zła",
+                "good": "Dobra",
+                "average": "Średnia"
+            };
                     return `
                         <div class="report-card" onclick="toggleReportDetails(${report.report_id}, this)">
                             <strong>Raport o id ${report.report_id} z dnia ${formattedDate}</strong>
                             <div class="report-details" id="report-details-${report.report_id}">
                                 <p>Poziom nastroju: ${report.mood_level}</p>
                                 <p>Poziom lęku: ${report.anxiety_level}</p>
-                                <p>Jakość snu: ${report.sleep_quality}</p>
+                                <p>Jakość snu: ${moodMapping[report.sleep_quality]}</p>
                                 <p>Apetyt: ${report.appetite_level}</p>
                                 <p>Przyjmowanie leków: ${report.medication_adherence ? 'Tak' : 'Nie'}</p>
                                 <p>Objawy psychotyczne: ${report.psychotic_symptoms ? 'Tak' : 'Nie'}</p>
