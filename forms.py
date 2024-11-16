@@ -9,13 +9,19 @@ class LoginForm(FlaskForm):
 
 
 class ReportForm(FlaskForm):
-    title = StringField('Tytuł Raportu', validators=[DataRequired()]) 
-    mood_level = IntegerField('Poziom Samopoczucia', validators=[DataRequired(), NumberRange(min=1, max=10)])
-    anxiety_level = IntegerField('Poziom Lęku', validators=[DataRequired(), NumberRange(min=1, max=10)])
-    sleep_quality = SelectField('Jakość Snu', choices=[('good', 'Good'), ('average', 'Average'), ('bad', 'Bad')], validators=[DataRequired()])
-    appetite_level = IntegerField('Poziom Apetytu', validators=[DataRequired(), NumberRange(min=1, max=10)])
-    medication_adherence = BooleanField('Przyjmowanie Leków ', validators=[DataRequired()])
-    psychotic_symptoms = BooleanField('Objawy Psychotyczne', validators=[DataRequired()])
-    behavioral_observations = TextAreaField('Obserwacje Behawioralne')
+    mood_level = SelectField('Poziom nastroju', 
+                           choices=[(str(i), str(i)) for i in range(1, 11)],
+                           validators=[DataRequired()])
+    anxiety_level = SelectField('Poziom lęku',
+                              choices=[(str(i), str(i)) for i in range(1, 11)],
+                              validators=[DataRequired()])
+    sleep_quality = SelectField('Jakość snu',
+                              choices=[('good', 'Dobra'), ('average', 'Średnia'), ('bad', 'Zła')],
+                              validators=[DataRequired()])
+    appetite_level = SelectField('Apetyt',
+                               choices=[(str(i), str(i)) for i in range(1, 11)],
+                               validators=[DataRequired()])
+    medication_adherence = BooleanField('Przyjmowanie leków')
+    psychotic_symptoms = BooleanField('Objawy psychotyczne')
+    behavioral_observations = TextAreaField('Obserwacje')
     comments = TextAreaField('Komentarze')
-    submit = SubmitField('Submit')

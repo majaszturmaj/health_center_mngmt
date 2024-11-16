@@ -208,16 +208,27 @@
     <script>
         // Funkcja do pobierania i wyświetlania listy pacjentów
         async function loadPatients() {
-            const response = await fetch('/nurse/patients');
-            const patients = await response.json();
-            const patientList = document.getElementById('patient-list');
-            
-            patientList.innerHTML = patients.map(patient => `
-                <div class="patient-item" onclick="loadReports(${patient.patient_id})">
-                    ${patient.name}
-                </div>
-            `).join('');
-        }
+        const response = await fetch('/nurse/patients');
+        const patients = await response.json();
+        const patientList = document.getElementById('patient-list');
+    
+        patientList.innerHTML = patients.map(patient => `
+            <div class="patient-item" data-patient-id="${patient.patient_id}" onclick="selectPatient(${patient.patient_id}, this)">
+                ${patient.name}
+            </div>
+    `   ).join('');
+}
+
+// Funkcja do zaznaczania aktywnego pacjenta
+function selectPatient(patientId, element) {
+    // Usunięcie klasy 'active' z wszystkich elementów
+    document.querySelectorAll('.patient-item').forEach(item => item.classList.remove('active'));
+    // Dodanie klasy 'active' do klikniętego elementu
+    element.classList.add('active');
+    // Załadowanie raportów dla wybranego pacjenta
+    loadReports(patientId);
+}
+
 
         // Funkcja do pobierania i wyświetlania raportów dla wybranego pacjenta
         async function loadReports(patientId) {
@@ -247,6 +258,7 @@
                 </div>
             `;
         }).join('');
+        
 
     } catch (error) {
         console.error('Error:', error);
@@ -261,6 +273,49 @@
 
         // Załaduj listę pacjentów przy starcie
         document.addEventListener('DOMContentLoaded', loadPatients);
+
+// Modyfikacja funkcji dodawania raportu
+document.getElementById('report-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    // Pobranie aktualnie wybranego ID pacjenta
+    const patientId = document.querySelector('.patient-item.active')?.dataset.patientId;
+    if (!patientId) {
+        alert('Proszę wybrać pacjenta przed dodaniem raportu');
+        return;
+    }
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    formData.append('patient_id', patientId);
+    
+    // Obsługa pól checkbox
+    formData.set('medication_adherence', form.medication_adherence.checked ? '1' : '0');
+    formData.set('psychotic_symptoms', form.psychotic_symptoms.checked ? '1' : '0');
+
+    try {
+        const response = await fetch('/nurse/add-report', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Raport został dodany pomyślnie!');
+            // Załaduj raporty dla aktualnego pacjenta
+            loadReports(patientId);
+            // Resetuj formularz
+            form.reset();
+        } else {
+            alert('Błąd: ' + (result.error || 'Nie udało się dodać raportu'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Wystąpił błąd podczas dodawania raportu');
+    }
+});
+
     </script>
 </body>
 </html>

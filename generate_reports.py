@@ -13,7 +13,7 @@ with app.app_context():
     
     # Define common report options that będą używane dla wszystkich pacjentów
     common_options = {
-        'sleep_quality_options': ['good', 'average', 'bad'],
+        'sleep_quality_options': ['dobra', 'średnia', 'zła'],
         'behavioral_observations': [
             "Pacjent współpracuje podczas terapii",
             "Pacjent wykazuje oznaki poprawy",
