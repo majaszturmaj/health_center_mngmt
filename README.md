@@ -40,7 +40,8 @@ System służy do zarządzania pacjentami w szpitalu psychiatrycznym, umożliwia
 
 ## Struktura bazy danych
 
-![erd](https://github.com/user-attachments/assets/a0f57efa-8456-4a58-9e0c-27784bf6ab85)
+![erd](https://github.com/user-attachments/assets/95c15481-f43e-4bbd-a5ab-dc7667203209)
+
 
 
 ### Tabele:
