@@ -210,7 +210,11 @@
                         <label for="edit-anxiety-level">Poziom lęku:</label>
                         <input type="text" id="edit-anxiety-level">
                         <label for="edit-sleep-quality">Jakość snu:</label>
-                        <input type="text" id="edit-sleep-quality">
+                        <select id="edit-sleep-quality">
+                            <option value="bad">Zła</option>
+                            <option value="average">Średnia</option>
+                            <option value="good">Dobra</option>
+                        </select>
                         <label for="edit-appetite-level">Apetyt:</label>
                         <input type="text" id="edit-appetite-level">
                         <label for="edit-medication-adherence">Przyjmowanie leków:</label>
@@ -322,7 +326,13 @@ function editReport(reportId) {
     document.getElementById('edit-report-id').value = reportId;
     document.getElementById('edit-mood-level').value = report.querySelector('p:nth-child(1)').textContent.split(': ')[1];
     document.getElementById('edit-anxiety-level').value = report.querySelector('p:nth-child(2)').textContent.split(': ')[1];
-    document.getElementById('edit-sleep-quality').value = report.querySelector('p:nth-child(3)').textContent.split(': ')[1];
+    const sleepQuality = report.querySelector('p:nth-child(3)').textContent.split(': ')[1];
+    const sleepQualityMapping = {
+        "Zła": "bad",
+        "Średnia": "average",
+        "Dobra": "good"
+    };
+    document.getElementById('edit-sleep-quality').value = sleepQualityMapping[sleepQuality];
     document.getElementById('edit-appetite-level').value = report.querySelector('p:nth-child(4)').textContent.split(': ')[1];
     document.getElementById('edit-medication-adherence').checked = report.querySelector('p:nth-child(5)').textContent.split(': ')[1] === 'Tak';
     document.getElementById('edit-psychotic-symptoms').checked = report.querySelector('p:nth-child(6)').textContent.split(': ')[1] === 'Tak';
