@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from config import Config
-from models import User, Patient, Report, Doctor
+from models import User, Patient, Report, Doctor, Instructions
 from forms import LoginForm, ReportForm
+from flask_login import LoginManager
 from database import db, init_db
 from datetime import datetime
 from flask_mail import Mail, Message
@@ -279,50 +280,61 @@ def send_prescription(patient_id):
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
-
-@app.route('/doctor/instructions/<int:patient_id>')
-def get_patient_instructions(patient_id):
+@app.route('/doctor/instructions/<int:patient_id>', methods=['GET'])
+@login_required  # Ensure the user is logged in
+def get_instruction_by_patient(patient_id):
     if session.get('role') != 'doctor':
-        return redirect(url_for('login'))
-
-    instructions = Instructions.query.filter_by(patient_id=patient_id).all()
-    return jsonify([{
-        'instruction_id': i.instruction_id,
-        'instruction_text': i.instruction_text,
-        'created_at': i.created_at
-    } for i in instructions])
+        return jsonify({"success": False, "message": "Unauthorized access"}), 403
+    try:
+        instruction = Instructions.query.filter_by(patient_id=patient_id).first()
+        if instruction:
+            return jsonify({
+                "success": True,
+                "patient_id": patient_id, 
+                "instruction": instruction.instruction_text,
+                "created_at": instruction.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            }), 200
+        else:
+            return jsonify({"success": True, "instruction": "", "message": "No instruction found"}), 200
+    except Exception as e:
+        print(f"Error fetching instruction: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route('/doctor/update-instruction', methods=['POST'])
+@login_required
 def update_instruction():
     if session.get('role') != 'doctor':
-        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
-
-    data = request.get_json()
-    patient_id = data.get('patient_id')
-    instruction_text = data.get('instruction_text')
-
-    # Find the instruction or create a new one if it doesn't exist
-    instruction = Instructions.query.filter_by(patient_id=patient_id).first()
-    doctor_id = Doctor.query.filter_by(user_id=session['user_id']).first().doctor_id
-
-    if instruction:
-        # Update existing instruction
-        instruction.instruction_text = instruction_text
-    else:
-        # Create a new instruction if none exists
-        instruction = Instructions(
-            patient_id=patient_id,
-            doctor_id=doctor_id,
-            instruction_text=instruction_text
-        )
-        db.session.add(instruction)
-
+        return jsonify({"success": False, "message": "Unauthorized access"}), 403
     try:
+        data = request.get_json()
+        patient_id = data.get('patient_id')
+        instruction_text = data.get('instruction_text')
+        doctor_id = session.get('user_id')
+
+        if not (patient_id and instruction_text):
+            return jsonify({"success": False, "message": "Missing patient ID or instruction text"}), 400
+
+        instruction = Instructions.query.filter_by(patient_id=patient_id).first()
+        if instruction:
+            instruction.instruction_text = instruction_text
+            instruction.doctor_id = doctor_id
+            instruction.created_at = datetime.now()
+        else:
+            instruction = Instructions(
+                patient_id=patient_id,
+                doctor_id=doctor_id,
+                instruction_text=instruction_text,
+                created_at=datetime.now()
+            )
+            db.session.add(instruction)
         db.session.commit()
-        return jsonify({'success': True, 'message': 'Instrukcja zaktualizowana pomyślnie'})
+        return jsonify({'success': True, 'instruction': instruction_text})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        print(f"Error: {e}")
+        return jsonify({"success": False, "message": "An error occurred while updating the instruction"}), 500
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

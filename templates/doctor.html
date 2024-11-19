@@ -165,13 +165,16 @@
                 <div class="instructions-section">
                     <h2>Instrukcje dla personelu</h2>
                     <div id="instruction-container">
-                        <div class="form-group">
-                            <textarea id="instruction-text" rows="5" readonly></textarea>
-                        </div>
-                        <button type="button" class="submit-btn" onclick="saveInstruction()">Zapisz</button>
+                        <!-- Add a hidden input for storing the doctor_id -->
+                        <input type="hidden" id="doctor-id" value="{{ current_doctor_id }}">
+                        
+                        <!-- Editable text area for instruction -->
+                        <textarea id="instruction-text" rows="5" readonly onclick="enableEditing()"></textarea>
                     </div>
-                </div>                                   
-
+                    <!-- Save button to commit the changes -->
+                    <button type="button" class="submit-btn" onclick="saveInstruction()">Zapisz</button>
+                </div>
+                
 
                 <div class="prescription">
                     <h2>Wystawienie E-Recepty</h2>
@@ -242,17 +245,6 @@
                 console.error('Error:', error);
             }
         }
-
-        // Funkcja do renderowania wykresu
-function renderPatientChart(patientId) {
-    fetch(`/doctor/reports/${patientId}`)
-        .then(response => response.json())
-        .then(reports => {
-            const root = ReactDOM.createRoot(document.getElementById('patient-chart'));
-            root.render(React.createElement(PatientStateChart, { reports: reports }));
-        })
-        .catch(error => console.error('Error:', error));
-}
 
         function toggleReportDetails(reportId, element) {
             const detailsElement = document.getElementById(`report-details-${reportId}`);
@@ -349,45 +341,37 @@ async function loadInstructions(patientId) {
     }
 }
 
-// Funkcja umożliwiająca edycję pola
-function enableEditing() {
-    this.removeAttribute('readonly');
-    this.focus(); // Ustawienie kursora wewnątrz pola po kliknięciu
+
+function saveInstruction() {
+    fetch('/doctor/update-instruction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            instruction: document.getElementById('instruction-text').value,
+            doctor_id: document.getElementById('doctor-id').value
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 
-
-
-
-async function saveInstruction() {
-    const instructionText = document.getElementById('instruction-text').value;
-    
-    if (!selectedPatientId) {
-        alert('Wybierz pacjenta przed zapisaniem instrukcji');
-        return;
-    }
-
-    try {
-        const response = await fetch('/doctor/update-instruction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                patient_id: selectedPatientId,
-                instruction_text: instructionText
-            })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            alert("Instrukcja została zaktualizowana!");
-        } else {
-            alert("Błąd podczas zapisywania instrukcji");
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
+function enableEditing() {
+    const instructionText = document.getElementById('instruction-text');
+    instructionText.removeAttribute('readonly'); // Remove readonly attribute to make it editable
+    instructionText.focus(); // Set focus to the text area to show the blinking cursor
 }
 
 
