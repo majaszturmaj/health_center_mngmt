@@ -1,5 +1,6 @@
 from database import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 
 class User(db.Model):
     __tablename__ = 'Users'
@@ -54,3 +55,12 @@ class Report(db.Model):
 
     patient = db.relationship('Patient', backref='reports')
     nurse = db.relationship('User', backref='reports')
+
+class Instructions(db.Model):
+    __tablename__ = 'Instructions'
+    instruction_id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('Patients.patient_id'), nullable=False)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('Doctors.doctor_id'), nullable=False)
+    instruction_text = db.Column(db.Text)
+    created_at = db.Column(db.DateTime)
+

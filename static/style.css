@@ -78,3 +78,27 @@ h2 {
 .text-center {
     text-align: center; /* Wyśrodkowanie tekstu */
 }
+
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 400px;
+}
+
+.patient-chart {
+    margin-bottom: 24px;
+}
+
+.patient-chart h2 {
+    margin-bottom: 16px;
+}
+
+/* Style dla responsywności */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 300px;
+    }
+}

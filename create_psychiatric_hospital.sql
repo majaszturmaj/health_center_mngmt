@@ -54,4 +54,15 @@ CREATE TABLE IF NOT EXISTS Reports (
     FOREIGN KEY (nurse_id) REFERENCES Users(user_id)  -- Foreign key to users
 );
 
+-- Instructions
+CREATE TABLE IF NOT EXISTS Instructions (
+    instruction_id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    doctor_id INT NOT NULL,
+    instruction_text TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    FOREIGN KEY (doctor_id) REFERENCES Doctors(doctor_id)
+);
+
 

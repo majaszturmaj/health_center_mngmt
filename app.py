@@ -280,5 +280,49 @@ def send_prescription(patient_id):
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
+@app.route('/doctor/instructions/<int:patient_id>')
+def get_patient_instructions(patient_id):
+    if session.get('role') != 'doctor':
+        return redirect(url_for('login'))
+
+    instructions = Instructions.query.filter_by(patient_id=patient_id).all()
+    return jsonify([{
+        'instruction_id': i.instruction_id,
+        'instruction_text': i.instruction_text,
+        'created_at': i.created_at
+    } for i in instructions])
+
+@app.route('/doctor/update-instruction', methods=['POST'])
+def update_instruction():
+    if session.get('role') != 'doctor':
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    patient_id = data.get('patient_id')
+    instruction_text = data.get('instruction_text')
+
+    # Find the instruction or create a new one if it doesn't exist
+    instruction = Instructions.query.filter_by(patient_id=patient_id).first()
+    doctor_id = Doctor.query.filter_by(user_id=session['user_id']).first().doctor_id
+
+    if instruction:
+        # Update existing instruction
+        instruction.instruction_text = instruction_text
+    else:
+        # Create a new instruction if none exists
+        instruction = Instructions(
+            patient_id=patient_id,
+            doctor_id=doctor_id,
+            instruction_text=instruction_text
+        )
+        db.session.add(instruction)
+
+    try:
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Instrukcja zaktualizowana pomyślnie'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -161,6 +161,18 @@
                     </div>
                 </div>
 
+
+                <div class="instructions-section">
+                    <h2>Instrukcje dla personelu</h2>
+                    <div id="instruction-container">
+                        <div class="form-group">
+                            <textarea id="instruction-text" rows="5" readonly></textarea>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="saveInstruction()">Zapisz</button>
+                    </div>
+                </div>                                   
+
+
                 <div class="prescription">
                     <h2>Wystawienie E-Recepty</h2>
                     <form id="prescription-form">
@@ -191,7 +203,8 @@
         }
 
         async function loadReports(patientId, patientElement) {
-            selectedPatientId = patientId; // Store the selected patient ID
+            selectedPatientId = patientId;
+            document.getElementById('instruction-text').value = '';
             try {
                 const response = await fetch(`/doctor/reports/${patientId}`);
                 const reports = await response.json();
@@ -223,10 +236,23 @@
                         </div>
                     `;
                 }).join('');
+
+            loadInstructions(patientId);
             } catch (error) {
                 console.error('Error:', error);
             }
         }
+
+        // Funkcja do renderowania wykresu
+function renderPatientChart(patientId) {
+    fetch(`/doctor/reports/${patientId}`)
+        .then(response => response.json())
+        .then(reports => {
+            const root = ReactDOM.createRoot(document.getElementById('patient-chart'));
+            root.render(React.createElement(PatientStateChart, { reports: reports }));
+        })
+        .catch(error => console.error('Error:', error));
+}
 
         function toggleReportDetails(reportId, element) {
             const detailsElement = document.getElementById(`report-details-${reportId}`);
@@ -268,6 +294,103 @@
             event.preventDefault();
             sendPrescription(selectedPatientId);
         });
+
+        function sendInstruction() {
+    const instructionText = document.getElementById('instruction-text').value;
+    
+    if (!selectedPatientId) {
+        alert('Wybierz najpierw pacjenta');
+        return;
+    }
+
+    fetch('/doctor/add-instruction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            patient_id: selectedPatientId,
+            instruction_text: instructionText
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            loadInstructions(selectedPatientId);
+            document.getElementById('instruction-text').value = '';
+        } else {
+            alert('Błąd podczas dodawania instrukcji');
+        }
+    });
+}
+
+async function loadInstructions(patientId) {
+    try {
+        const response = await fetch(`/doctor/instructions/${patientId}`);
+        const instructions = await response.json();
+
+        const instructionTextArea = document.getElementById('instruction-text');
+        
+        // Wyświetl istniejące instrukcje lub wyczyść pole
+        if (instructions.length > 0) {
+            instructionTextArea.value = instructions[0].instruction_text;
+        } else {
+            instructionTextArea.value = ''; // Puste pole, jeśli brak instrukcji
+        }
+
+        // Ustaw pole jako tylko do odczytu domyślnie
+        instructionTextArea.setAttribute('readonly', false);
+
+        instructionTextArea.removeEventListener('click', enableEditing);
+        instructionTextArea.addEventListener('click', enableEditing);
+
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Funkcja umożliwiająca edycję pola
+function enableEditing() {
+    this.removeAttribute('readonly');
+    this.focus(); // Ustawienie kursora wewnątrz pola po kliknięciu
+}
+
+
+
+
+
+async function saveInstruction() {
+    const instructionText = document.getElementById('instruction-text').value;
+    
+    if (!selectedPatientId) {
+        alert('Wybierz pacjenta przed zapisaniem instrukcji');
+        return;
+    }
+
+    try {
+        const response = await fetch('/doctor/update-instruction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                patient_id: selectedPatientId,
+                instruction_text: instructionText
+            })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("Instrukcja została zaktualizowana!");
+        } else {
+            alert("Błąd podczas zapisywania instrukcji");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
 
         document.addEventListener('DOMContentLoaded', loadPatients);
     </script>
