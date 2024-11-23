@@ -84,6 +84,35 @@ def get_patient_reports0(patient_id):
         'comments': r.comments
     } for r in reports])
 
+@app.route('/doctor/add-report', methods=['POST'])
+def add_report_doctor():
+    if session.get('role') != 'doctor':
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+    try:
+        # Parse form data
+        data = request.form
+        new_report = Report(
+            patient_id=data['patient_id'],
+            nurse_id=session.get('user_id'),
+            report_date=datetime.now(),
+            mood_level=int(data['mood_level']),
+            anxiety_level=int(data['anxiety_level']),
+            sleep_quality=data['sleep_quality'],
+            appetite_level=int(data['appetite_level']),
+            medication_adherence=bool(int(data['medication_adherence'])),
+            psychotic_symptoms=bool(int(data['psychotic_symptoms'])),
+            behavioral_observations=data.get('behavioral_observations', ''),
+            comments=data.get('comments', '')
+        )
+        db.session.add(new_report)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Raport został pomyślnie dodany'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/nurse')
 def nurse_page():
     role = session.get('role')

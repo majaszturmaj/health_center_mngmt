@@ -2,139 +2,212 @@
 <html>
 <head>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+       * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            background-color: #f5f5f5;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f5f5f5;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-        .header h1 {
-            color: #2c3e50;
-        }
+.header h1 {
+    color: #2c3e50;
+}
 
-        .logout-btn {
-            padding: 8px 16px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            text-decoration: none;
-        }
+.logout-btn {
+    padding: 8px 16px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+}
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-        }
+/* Układ głównego kontenera */
+.content-area {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; /* Trzy kolumny: 1 (lista pacjentów), 2 (raporty, instrukcje, erecepta), 3 (nowy raport) */
+    gap: 20px;
+}
 
-        .patients-list {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+/* Kolumna 1: Lista Pacjentów */
+.patients-list {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-        .patient-item {
-            padding: 10px;
-            margin: 5px 0;
-            background: #f8f9fa;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+.patient-item {
+    padding: 10px;
+    margin: 5px 0;
+    background: #f8f9fa;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
 
-        .patient-item:hover {
-            background: #e9ecef;
-        }
+.patient-item:hover {
+    background: #e9ecef;
+}
 
-        .patient-item.active {
-            background: #007bff;
-            color: white;
-        }
+.patient-item.active {
+    background: #007bff;
+    color: white;
+}
 
-        .content-area {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
+/* Kolumna 2: Historia raportów, instrukcje, erecepta */
+.center-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-        .reports-list {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+/* Historia raportów */
+.reports-list {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-        .report-card {
-            background: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+/* Instrukcje */
+.instructions-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-        .report-details {
-            display: none; /* Hide details initially */
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #dce4ec;
-            border-radius: 4px;
-            background: #e9ecef;
-        }
+/* E-Recepta */
+.prescription {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+/* Kolumna 3: Nowy Raport */
+.new-report-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 800px;
+    overflow-y: auto;
+}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #2c3e50;
-        }
+.new-report-form h2 {
+    margin-bottom: 15px;
+}
 
-        .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #dce4ec;
-            border-radius: 4px;
-        }
+.new-report-form .form-group {
+    margin-bottom: 15px;
+}
 
-        .submit-btn {
-            padding: 10px 20px;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+.new-report-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
 
-        .submit-btn:hover {
-            background-color: #27ae60;
-        }
+.new-report-form .form-group input,
+.new-report-form .form-group select,
+.new-report-form .form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
+}
+
+.new-report-form .submit-btn {
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.new-report-form .submit-btn:hover {
+    background-color: #27ae60;
+}
+
+/* Formularz - Instrukcje i E-Recepta */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
+}
+
+.submit-btn {
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #27ae60;
+}
+
+/* Szczegóły raportu */
+.report-card {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.report-details {
+    display: none; /* Ukryj szczegóły domyślnie */
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
+    background: #e9ecef;
+}
+
+
 
     </style>
 </head>
@@ -145,7 +218,8 @@
             <a href="{{ url_for('logout') }}" class="logout-btn">Wyloguj się</a>
         </header>
 
-        <div class="main-content">
+        <div class="content-area">
+            <!-- Kolumna 1: Lista Pacjentów -->
             <div class="patients-list">
                 <h2>Lista Pacjentów</h2>
                 <div id="patient-list">
@@ -153,7 +227,9 @@
                 </div>
             </div>
 
-            <div class="content-area">
+            <!-- Kolumna 2: Historia raportów, instrukcje i e-recepta -->
+            <div class="center-column">
+                <!-- Historia raportów -->
                 <div class="reports-list">
                     <h2>Historia Raportów</h2>
                     <div id="report-list">
@@ -161,20 +237,19 @@
                     </div>
                 </div>
 
+                <!-- Instrukcje dla personelu -->
+                <div class="instructions-section">
+                    <h2>Instrukcje dla personelu</h2>
+                    <form id="instruction-form">
+                        <div class="form-group">
+                            <label for="instruction-text">Wpisz instrukcje dla personelu</label>
+                            <textarea id="instruction-text" class="form-control" rows="5" placeholder="Wpisz instrukcje..."></textarea>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="saveInstruction()">Zapisz</button>
+                    </form>
+                </div>
 
-               <div class="instructions-section">
-    <h2>Instrukcje dla personelu</h2>
-    <form id="instruction-form">
-        <div class="form-group">
-            <label for="instruction-text">Wpisz instrukcje dla personelu</label>
-            <textarea id="instruction-text" class="form-control" rows="5" placeholder="Wpisz instrukcje..."></textarea>
-        </div>
-        <button type="button" class="submit-btn" onclick="saveInstruction()">Zapisz</button>
-    </form>
-</div>
-
-                
-
+                <!-- E-Recepta -->
                 <div class="prescription">
                     <h2>Wystawienie E-Recepty</h2>
                     <form id="prescription-form">
@@ -185,6 +260,50 @@
                         <button type="submit" class="submit-btn">Wyślij E-Receptę</button>
                     </form>
                 </div>
+            </div>
+
+            <!-- Kolumna 3: Nowy Raport -->
+            <div class="new-report-form">
+                <h2>Nowy Raport</h2>
+                <form id="report-form">
+                    <div class="form-group">
+                        <label for="mood_level">Poziom nastroju</label>
+                        <input type="number" id="mood_level" name="mood_level" class="form-control" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="anxiety_level">Poziom lęku</label>
+                        <input type="number" id="anxiety_level" name="anxiety_level" class="form-control" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sleep_quality">Jakość snu</label>
+                        <select id="sleep_quality" name="sleep_quality" class="form-control" required>
+                            <option value="bad">Zła</option>
+                            <option value="average">Średnia</option>
+                            <option value="good">Dobra</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="appetite_level">Apetyt</label>
+                        <input type="number" id="appetite_level" name="appetite_level" class="form-control" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="medication_adherence">Przyjmowanie leków</label>
+                        <input type="checkbox" id="medication_adherence" name="medication_adherence">
+                    </div>
+                    <div class="form-group">
+                        <label for="psychotic_symptoms">Objawy psychotyczne</label>
+                        <input type="checkbox" id="psychotic_symptoms" name="psychotic_symptoms">
+                    </div>
+                    <div class="form-group">
+                        <label for="behavioral_observations">Obserwacje</label>
+                        <textarea id="behavioral_observations" name="behavioral_observations" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="comments">Komentarze</label>
+                        <textarea id="comments" name="comments" class="form-control"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Zapisz Raport</button>
+                </form>
             </div>
         </div>
     </div>
@@ -368,8 +487,42 @@ function enableEditing() {
 }
 
 
+document.getElementById('report-form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const patientId = selectedPatientId;
+        if (!patientId) {
+            alert('Proszę wybrać pacjenta przed dodaniem raportu');
+            return;
+        }
+
+        const formData = new FormData(this);
+        formData.append('patient_id', patientId);
+        formData.set('medication_adherence', this.medication_adherence.checked ? '1' : '0');
+        formData.set('psychotic_symptoms', this.psychotic_symptoms.checked ? '1' : '0');
+
+        try {
+            const response = await fetch('/doctor/add-report', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Raport został dodany pomyślnie!');
+                this.reset(); // Reset the form
+                loadReports(patientId); // Refresh the report list
+            } else {
+                alert('Błąd: ' + result.error || 'Nie udało się dodać raportu');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Wystąpił błąd podczas dodawania raportu');
+        }
+    });
 
         document.addEventListener('DOMContentLoaded', loadPatients);
     </script>
 </body>
 </html>
+
