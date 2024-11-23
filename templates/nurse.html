@@ -71,7 +71,7 @@
         }
 
         .patient-item.active {
-            background: #007bff;
+            background: #005468;
             color: white;
         }
 
@@ -137,6 +137,120 @@
             border-radius: 4px;
             background: #e9ecef;
         }
+
+        .reports-list {
+    max-height: 800px; /* Fixed height */
+    overflow-y: auto; /* Enable scrolling */
+    background: white;
+    padding: 20px; /* Adjust padding for content spacing */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0; /* Remove bottom margin */
+}
+
+
+.instructions-list {
+    background: white;
+    overflow-y: auto; /* Enable scrolling */
+    padding: 20px; /* Adjust padding for content spacing */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 0; /* Remove top margin */
+}
+#edit-report-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Zmniejsz szerokość */
+    max-width: 90%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 15px; /* Zmniejsz padding */
+    z-index: 1000;
+}
+
+#edit-report-modal h2 {
+    margin-bottom: 15px; /* Zmniejsz odstęp poniżej nagłówka */
+    color: #2c3e50;
+    text-align: center;
+    font-size: 1.5rem; /* Zmniejsz rozmiar nagłówka */
+}
+
+#edit-report-modal .form-group {
+    margin-bottom: 12px; /* Zmniejsz odstępy między polami */
+}
+
+#edit-report-modal .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #2c3e50;
+    font-size: 0.9rem; /* Zmniejsz rozmiar tekstu */
+}
+
+#edit-report-modal .form-group input,
+#edit-report-modal .form-group select,
+#edit-report-modal .form-group textarea {
+    width: 100%;
+    padding: 8px; /* Zmniejsz padding */
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
+    font-size: 0.9rem; /* Zmniejsz rozmiar tekstu */
+}
+
+#edit-report-modal .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px; /* Zmniejsz odstęp nad przyciskami */
+}
+
+#edit-report-modal .modal-buttons button {
+    padding: 8px 16px; /* Zmniejsz rozmiar przycisków */
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem; /* Zmniejsz tekst przycisków */
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#edit-report-modal .modal-buttons .save-btn {
+    background-color: #2ecc71;
+    color: white;
+}
+
+#edit-report-modal .modal-buttons .save-btn:hover {
+    background-color: #27ae60;
+}
+
+#edit-report-modal .modal-buttons .cancel-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+#edit-report-modal .modal-buttons .cancel-btn:hover {
+    background-color: #c0392b;
+}
+
+#edit-report-modal .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem; /* Zmniejsz rozmiar przycisku zamknięcia */
+    cursor: pointer;
+    color: #2c3e50;
+    transition: color 0.2s;
+}
+
+#edit-report-modal .close-button:hover {
+    color: #e74c3c;
+}
+
+
+
+
     </style>
 </head>
 <body>
@@ -203,41 +317,64 @@
                 </div>
 
                 <div id="edit-report-modal" style="display:none;">
+                    <button class="close-button" onclick="closeEditModal()">×</button>
+                    <h2>Edytuj Raport</h2>
                     <form id="edit-report-form">
                         <input type="hidden" id="edit-report-id">
-                        <label for="edit-mood-level">Poziom nastroju:</label>
-                        <input type="text" id="edit-mood-level">
-                        <label for="edit-anxiety-level">Poziom lęku:</label>
-                        <input type="text" id="edit-anxiety-level">
-                        <label for="edit-sleep-quality">Jakość snu:</label>
-                        <select id="edit-sleep-quality">
-                            <option value="bad">Zła</option>
-                            <option value="average">Średnia</option>
-                            <option value="good">Dobra</option>
-                        </select>
-                        <label for="edit-appetite-level">Apetyt:</label>
-                        <input type="text" id="edit-appetite-level">
-                        <label for="edit-medication-adherence">Przyjmowanie leków:</label>
-                        <input type="checkbox" id="edit-medication-adherence">
-                        <label for="edit-psychotic-symptoms">Objawy psychotyczne:</label>
-                        <input type="checkbox" id="edit-psychotic-symptoms">
-                        <label for="edit-behavioral-observations">Obserwacje:</label>
-                        <textarea id="edit-behavioral-observations"></textarea>
-                        <label for="edit-comments">Komentarze:</label>
-                        <textarea id="edit-comments"></textarea>
-                        <button type="submit">Zapisz</button>
-                        <button type="button" onclick="closeEditModal()">Anuluj</button>
+                        <div class="form-group">
+                            <label for="edit-mood-level">Poziom nastroju:</label>
+                            <input type="text" id="edit-mood-level">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-anxiety-level">Poziom lęku:</label>
+                            <input type="text" id="edit-anxiety-level">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-sleep-quality">Jakość snu:</label>
+                            <select id="edit-sleep-quality">
+                                <option value="bad">Zła</option>
+                                <option value="average">Średnia</option>
+                                <option value="good">Dobra</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-appetite-level">Apetyt:</label>
+                            <input type="text" id="edit-appetite-level">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-medication-adherence">Przyjmowanie leków:</label>
+                            <input type="checkbox" id="edit-medication-adherence">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-psychotic-symptoms">Objawy psychotyczne:</label>
+                            <input type="checkbox" id="edit-psychotic-symptoms">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-behavioral-observations">Obserwacje:</label>
+                            <textarea id="edit-behavioral-observations"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-comments">Komentarze:</label>
+                            <textarea id="edit-comments"></textarea>
+                        </div>
+                        <div class="modal-buttons">
+                            <button type="submit" class="save-btn">Zapisz</button>
+                            <button type="button" class="cancel-btn" onclick="closeEditModal()">Anuluj</button>
+                        </div>
                     </form>
                 </div>
+                
+                <div class="instructions-list">
+                    <h2>Instrukcje</h2>
+                    <div id="instructions-section">
+                        <!-- Instructions will be loaded dynamically -->
+                        <p>Proszę wybrać pacjenta, aby zobaczyć instrukcje.</p>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="instructions-list">
-                <h2>Instrukcje</h2>
-                <div id="instructions-section">
-                    <!-- Instructions will be loaded dynamically -->
-                    <p>Proszę wybrać pacjenta, aby zobaczyć instrukcje.</p>
-                </div>
-            </div>
+            
             
         </div>
     </div>
