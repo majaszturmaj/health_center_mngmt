@@ -104,12 +104,11 @@ h2 {
 }
 
 
-.form-group textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #dce4ec;
-    border-radius: 4px;
+.instructions-list {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 
 

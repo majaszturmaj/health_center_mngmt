@@ -230,6 +230,15 @@
                     </form>
                 </div>
             </div>
+
+            <div class="instructions-list">
+                <h2>Instrukcje</h2>
+                <div id="instructions-section">
+                    <!-- Instructions will be loaded dynamically -->
+                    <p>Proszę wybrać pacjenta, aby zobaczyć instrukcje.</p>
+                </div>
+            </div>
+            
         </div>
     </div>
 
@@ -247,18 +256,15 @@
     `   ).join('');
 }
 
-// Funkcja do zaznaczania aktywnego pacjenta
+
 function selectPatient(patientId, element) {
-    // Usunięcie klasy 'active' z wszystkich elementów
     document.querySelectorAll('.patient-item').forEach(item => item.classList.remove('active'));
-    // Dodanie klasy 'active' do klikniętego elementu
     element.classList.add('active');
-    // Załadowanie raportów dla wybranego pacjenta
     loadReports(patientId);
+    loadInstructions(patientId);
 }
 
 
-        // Funkcja do pobierania i wyświetlania raportów dla wybranego pacjenta
         async function loadReports(patientId) {
     try {
         const response = await fetch(`/nurse/reports/${patientId}`);
@@ -386,6 +392,28 @@ detailsElement.style.display = detailsElement.style.display === 'none' || detail
 } else {
 console.error(`Nie znaleziono elementu o ID: report-details-${reportId}`);
 }
+}
+
+
+async function loadInstructions(patientId) {
+    try {
+        const response = await fetch(`/doctor/instructions/${patientId}`);
+        const instruction = await response.json();
+
+        const instructionsSection = document.getElementById('instructions-section');
+        if (instruction && instruction.instruction_id) {
+            instructionsSection.innerHTML = `
+                <p><strong>Data Utworzenia:</strong> ${new Date(instruction.created_at).toLocaleString()}</p>
+                <p><strong>Lekarz:</strong> ${instruction.doctor_id}</p>
+                <p><strong>Treść Instrukcji:</strong> ${instruction.instruction_text}</p>
+            `;
+        } else {
+            instructionsSection.innerHTML = '<p>Brak zaleceń co do danego pacjenta</p>';
+        }
+    } catch (error) {
+        console.error('Error loading instructions:', error);
+        document.getElementById('instructions-section').innerHTML = '<p>Wystąpił błąd podczas ładowania instrukcji.</p>';
+    }
 }
 
 
