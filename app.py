@@ -7,7 +7,7 @@ from database import db, init_db
 from datetime import datetime
 from flask_mail import Mail, Message
 import os
-from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user, current_user
+from flask_login import LoginManager, login_required, UserMixin, login_user, logout_user
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -281,27 +281,27 @@ def send_prescription(patient_id):
         return jsonify({'success': False, 'message': str(e)}), 500
 
 @app.route('/doctor/instructions/<int:patient_id>', methods=['GET'])
-@login_required  # Ensure the user is logged in
-def get_instruction_by_patient(patient_id):
-    if session.get('role') != 'doctor':
-        return jsonify({"success": False, "message": "Unauthorized access"}), 403
+def get_instructions(patient_id):
     try:
-        instruction = Instructions.query.filter_by(patient_id=patient_id).first()
+        # Retrieve the latest instruction for the given patient
+        instruction = Instructions.query.filter_by(patient_id=patient_id).order_by(Instructions.created_at.desc()).first()
+        
         if instruction:
             return jsonify({
-                "success": True,
-                "patient_id": patient_id, 
-                "instruction": instruction.instruction_text,
-                "created_at": instruction.created_at.strftime('%Y-%m-%d %H:%M:%S')
-            }), 200
+                "instruction_id": instruction.instruction_id,
+                "patient_id": instruction.patient_id,
+                "doctor_id": instruction.doctor_id,
+                "instruction_text": instruction.instruction_text,
+                "created_at": instruction.created_at.isoformat()
+            })
         else:
-            return jsonify({"success": True, "instruction": "", "message": "No instruction found"}), 200
+            return jsonify([])  # Return an empty list if no instruction exists
     except Exception as e:
-        print(f"Error fetching instruction: {e}")
-        return jsonify({"success": False, "message": str(e)}), 500
+        print(f"Error fetching instructions: {e}")
+        return jsonify({"error": "An error occurred while fetching instructions"}), 500
+
 
 @app.route('/doctor/update-instruction', methods=['POST'])
-@login_required
 def update_instruction():
     if session.get('role') != 'doctor':
         return jsonify({"success": False, "message": "Unauthorized access"}), 403

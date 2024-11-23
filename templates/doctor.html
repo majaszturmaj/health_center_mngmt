@@ -287,70 +287,58 @@
             sendPrescription(selectedPatientId);
         });
 
-        function sendInstruction() {
+        async function loadInstructions(patientId) {
+    try {
+        // Fetch the instruction from the server
+        const response = await fetch(`/doctor/instructions/${patientId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch instructions');
+        }
+        const instruction = await response.json();
+
+        // Reference to the instruction text area
+        const instructionTextArea = document.getElementById('instruction-text');
+
+        // Populate the text area with the latest instruction
+        if (instruction && instruction.instruction_text) {
+            instructionTextArea.value = instruction.instruction_text;
+        } else {
+            instructionTextArea.value = ''; // Clear the text area if no instruction exists
+        }
+
+        // Make the text area editable only on click
+        instructionTextArea.setAttribute('readonly', true); // Set readonly by default
+        instructionTextArea.removeEventListener('click', enableEditing); // Prevent multiple event bindings
+        instructionTextArea.addEventListener('click', enableEditing); // Enable editing on click
+    } catch (error) {
+        console.error('Error loading instructions:', error);
+    }
+}
+
+function saveInstruction() {
+    // Retrieve the required fields
+    const patientId = selectedPatientId; // Assuming `selectedPatientId` is set when a patient is selected
     const instructionText = document.getElementById('instruction-text').value;
-    
-    if (!selectedPatientId) {
-        alert('Wybierz najpierw pacjenta');
+
+    // Check if the required fields are present
+    if (!patientId) {
+        alert('Please select a patient before saving the instruction.');
+        return;
+    }
+    if (!instructionText) {
+        alert('Please enter an instruction before saving.');
         return;
     }
 
-    fetch('/doctor/add-instruction', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            patient_id: selectedPatientId,
-            instruction_text: instructionText
-        })
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            loadInstructions(selectedPatientId);
-            document.getElementById('instruction-text').value = '';
-        } else {
-            alert('Błąd podczas dodawania instrukcji');
-        }
-    });
-}
-
-async function loadInstructions(patientId) {
-    try {
-        const response = await fetch(`/doctor/instructions/${patientId}`);
-        const instructions = await response.json();
-
-        const instructionTextArea = document.getElementById('instruction-text');
-        
-        // Wyświetl istniejące instrukcje lub wyczyść pole
-        if (instructions.length > 0) {
-            instructionTextArea.value = instructions[0].instruction_text;
-        } else {
-            instructionTextArea.value = ''; // Puste pole, jeśli brak instrukcji
-        }
-
-        // Ustaw pole jako tylko do odczytu domyślnie
-        instructionTextArea.setAttribute('readonly', false);
-
-        instructionTextArea.removeEventListener('click', enableEditing);
-        instructionTextArea.addEventListener('click', enableEditing);
-
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-
-function saveInstruction() {
+    // Send the data to the backend
     fetch('/doctor/update-instruction', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            instruction: document.getElementById('instruction-text').value,
-            doctor_id: document.getElementById('doctor-id').value
+            patient_id: patientId,
+            instruction_text: instructionText
         })
     })
     .then(response => {
@@ -360,10 +348,16 @@ function saveInstruction() {
         return response.json();
     })
     .then(data => {
-        console.log('Success:', data);
+        if (data.success) {
+            alert('Instruction saved successfully!');
+            console.log('Success:', data);
+        } else {
+            alert(`Error: ${data.message}`);
+        }
     })
     .catch(error => {
         console.error('Error:', error);
+        alert('An error occurred while saving the instruction.');
     });
 }
 
