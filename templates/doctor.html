@@ -162,18 +162,17 @@
                 </div>
 
 
-                <div class="instructions-section">
-                    <h2>Instrukcje dla personelu</h2>
-                    <div id="instruction-container">
-                        <!-- Add a hidden input for storing the doctor_id -->
-                        <input type="hidden" id="doctor-id" value="{{ current_doctor_id }}">
-                        
-                        <!-- Editable text area for instruction -->
-                        <textarea id="instruction-text" rows="5" readonly onclick="enableEditing()"></textarea>
-                    </div>
-                    <!-- Save button to commit the changes -->
-                    <button type="button" class="submit-btn" onclick="saveInstruction()">Zapisz</button>
-                </div>
+               <div class="instructions-section">
+    <h2>Instrukcje dla personelu</h2>
+    <form id="instruction-form">
+        <div class="form-group">
+            <label for="instruction-text">Wpisz instrukcje dla personelu</label>
+            <textarea id="instruction-text" class="form-control" rows="5" placeholder="Wpisz instrukcje..."></textarea>
+        </div>
+        <button type="button" class="submit-btn" onclick="saveInstruction()">Zapisz</button>
+    </form>
+</div>
+
                 
 
                 <div class="prescription">
