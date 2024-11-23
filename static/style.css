@@ -42,7 +42,7 @@ h2 {
 }
 
 .form-control {
-    width: 100%; /* Szerokość pól formularza */
+    width: 95%; /* Szerokość pól formularza */
     padding: 10px; /* Padding wewnętrzny pól */
     border: 1px solid #dce4ec; /* Jasne obrabowanie */
     border-radius: 4px; /* Zaokrąglenie rogów */
