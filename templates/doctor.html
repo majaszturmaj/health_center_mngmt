@@ -44,14 +44,14 @@ body {
     text-decoration: none;
 }
 
-/* Układ głównego kontenera */
+
 .content-area {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr; /* Trzy kolumny: 1 (lista pacjentów), 2 (raporty, instrukcje, erecepta), 3 (nowy raport) */
+    grid-template-columns: 1fr 2fr 1fr; 
     gap: 20px;
 }
 
-/* Kolumna 1: Lista Pacjentów */
+
 .patients-list {
     background: white;
     padding: 20px;
@@ -77,14 +77,14 @@ body {
     color: white;
 }
 
-/* Kolumna 2: Historia raportów, instrukcje, erecepta */
+
 .center-column {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Historia raportów */
+
 .reports-list {
     background: white;
     padding: 20px;
@@ -92,7 +92,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Instrukcje */
+
 .instructions-section {
     background: white;
     padding: 20px;
@@ -100,7 +100,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* E-Recepta */
+
 .prescription {
     background: white;
     padding: 20px;
@@ -108,7 +108,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Kolumna 3: Nowy Raport */
+
 .new-report-form {
     background: white;
     padding: 20px;
@@ -155,7 +155,7 @@ body {
     background-color: #27ae60;
 }
 
-/* Formularz - Instrukcje i E-Recepta */
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -189,7 +189,7 @@ body {
     background-color: #27ae60;
 }
 
-/* Szczegóły raportu */
+
 .report-card {
     background: #f8f9fa;
     padding: 15px;
@@ -199,7 +199,7 @@ body {
 }
 
 .report-details {
-    display: none; /* Ukryj szczegóły domyślnie */
+    display: none; 
     margin-top: 10px;
     padding: 10px;
     border: 1px solid #dce4ec;
@@ -219,25 +219,24 @@ body {
         </header>
 
         <div class="content-area">
-            <!-- Kolumna 1: Lista Pacjentów -->
+           
             <div class="patients-list">
                 <h2>Lista Pacjentów</h2>
                 <div id="patient-list">
-                    <!-- Lista pacjentów będzie generowana przez JavaScript -->
+                    
                 </div>
             </div>
 
-            <!-- Kolumna 2: Historia raportów, instrukcje i e-recepta -->
             <div class="center-column">
-                <!-- Historia raportów -->
+                
                 <div class="reports-list">
                     <h2>Historia Raportów</h2>
                     <div id="report-list">
-                        <!-- Lista raportów będzie generowana przez JavaScript -->
+                        
                     </div>
                 </div>
 
-                <!-- Instrukcje dla personelu -->
+                
                 <div class="instructions-section">
                     <h2>Instrukcje dla personelu</h2>
                     <form id="instruction-form">
@@ -249,7 +248,7 @@ body {
                     </form>
                 </div>
 
-                <!-- E-Recepta -->
+                
                 <div class="prescription">
                     <h2>Wystawienie E-Recepty</h2>
                     <form id="prescription-form">
@@ -262,7 +261,7 @@ body {
                 </div>
             </div>
 
-            <!-- Kolumna 3: Nowy Raport -->
+           
             <div class="new-report-form">
                 <h2>Nowy Raport</h2>
                 <form id="report-form">
@@ -309,7 +308,7 @@ body {
     </div>
 
     <script>
-        let selectedPatientId = null; // Global variable to store the selected patient ID
+        let selectedPatientId = null; 
 
         async function loadPatients() {
             const response = await fetch('/nurse/patients');
@@ -407,38 +406,38 @@ body {
 
         async function loadInstructions(patientId) {
     try {
-        // Fetch the instruction from the server
+        
         const response = await fetch(`/doctor/instructions/${patientId}`);
         if (!response.ok) {
             throw new Error('Failed to fetch instructions');
         }
         const instruction = await response.json();
 
-        // Reference to the instruction text area
+        
         const instructionTextArea = document.getElementById('instruction-text');
 
-        // Populate the text area with the latest instruction
+        
         if (instruction && instruction.instruction_text) {
             instructionTextArea.value = instruction.instruction_text;
         } else {
-            instructionTextArea.value = ''; // Clear the text area if no instruction exists
+            instructionTextArea.value = ''; 
         }
 
-        // Make the text area editable only on click
-        instructionTextArea.setAttribute('readonly', true); // Set readonly by default
-        instructionTextArea.removeEventListener('click', enableEditing); // Prevent multiple event bindings
-        instructionTextArea.addEventListener('click', enableEditing); // Enable editing on click
+        
+        instructionTextArea.setAttribute('readonly', true); 
+        instructionTextArea.removeEventListener('click', enableEditing); 
+        instructionTextArea.addEventListener('click', enableEditing); 
     } catch (error) {
         console.error('Error loading instructions:', error);
     }
 }
 
 function saveInstruction() {
-    // Retrieve the required fields
-    const patientId = selectedPatientId; // Assuming `selectedPatientId` is set when a patient is selected
+    
+    const patientId = selectedPatientId; 
     const instructionText = document.getElementById('instruction-text').value;
 
-    // Check if the required fields are present
+    
     if (!patientId) {
         alert('Please select a patient before saving the instruction.');
         return;
@@ -448,7 +447,7 @@ function saveInstruction() {
         return;
     }
 
-    // Send the data to the backend
+    
     fetch('/doctor/update-instruction', {
         method: 'POST',
         headers: {
@@ -482,8 +481,8 @@ function saveInstruction() {
 
 function enableEditing() {
     const instructionText = document.getElementById('instruction-text');
-    instructionText.removeAttribute('readonly'); // Remove readonly attribute to make it editable
-    instructionText.focus(); // Set focus to the text area to show the blinking cursor
+    instructionText.removeAttribute('readonly'); 
+    instructionText.focus(); 
 }
 
 
@@ -510,8 +509,8 @@ document.getElementById('report-form').addEventListener('submit', async function
             const result = await response.json();
             if (result.success) {
                 alert('Raport został dodany pomyślnie!');
-                this.reset(); // Reset the form
-                loadReports(patientId); // Refresh the report list
+                this.reset(); 
+                loadReports(patientId); 
             } else {
                 alert('Błąd: ' + result.error || 'Nie udało się dodać raportu');
             }

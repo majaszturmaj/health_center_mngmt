@@ -1,18 +1,18 @@
-from app import create_app  # Import the create_app function
-from database import db  # Import your database instance
-from models import User, Doctor, Patient  # Import your models
-from sqlalchemy import text  # Import the text function for raw SQL
+from app import create_app  
+from database import db  
+from models import User, Doctor, Patient  
+from sqlalchemy import text  
 
-app = create_app()  # Create your Flask app
+app = create_app()  
 
-with app.app_context():  # Create application context
-    # Clear the tables in the correct order to respect foreign key constraints
+with app.app_context():  
+    
     db.session.execute(text('DELETE FROM Patients;'))
     db.session.execute(text('DELETE FROM Doctors;'))
     db.session.execute(text('DELETE FROM Users;'))
     db.session.commit()
 
-    # Add example users (nurses and doctors)
+    
     users = [
         {'username': 'nurse1', 'password': 'nurse_password', 'role': 'nurse'},
         {'username': 'doctor1', 'password': 'doctor_password1', 'role': 'doctor'},
@@ -22,13 +22,12 @@ with app.app_context():  # Create application context
     user_objects = []
     for user_data in users:
         user = User(username=user_data['username'], role=user_data['role'])
-        user.set_password(user_data['password'])  # Hash the password
+        user.set_password(user_data['password']) 
         user_objects.append(user)
         db.session.add(user)
 
-    db.session.commit()  # Commit the users first, so they have user_ids
+    db.session.commit()  
 
-    # Add doctors using the user_id from the previously created users
     doctors = [
         {'user_id': user_objects[1].user_id, 'specialization': 'Psychiatry'},
         {'user_id': user_objects[2].user_id, 'specialization': 'Clinical Psychology'}
@@ -40,9 +39,9 @@ with app.app_context():  # Create application context
         doctor_objects.append(doctor)
         db.session.add(doctor)
 
-    db.session.commit()  # Commit doctors, now we can retrieve their doctor_ids
+    db.session.commit()  
 
-    # Add example patients assigned to the correct doctors by doctor_id
+   
     patients = [
         {'first_name': 'Wacław', 'last_name': 'Kazimierz', 'email':'kawac@kawoc.com', 'date_of_birth': '1990-01-01', 'gender': 'male', 'assigned_doctor_id': doctor_objects[0].doctor_id},
         {'first_name': 'Emilia', 'last_name': 'Walewska', 'email':'kmrkfen@jkekvfk.erfee', 'date_of_birth': '1985-05-15', 'gender': 'female', 'assigned_doctor_id': doctor_objects[1].doctor_id},
@@ -62,7 +61,7 @@ with app.app_context():  # Create application context
         )
         db.session.add(patient)
 
-    db.session.commit()  # Commit patients
+    db.session.commit()  
 
     print("Users, doctors, and patients have been successfully added.")
-    import generate_reports  # Add this line at the end of your populate_users.py script
+    import generate_reports  

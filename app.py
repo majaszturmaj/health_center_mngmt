@@ -15,10 +15,10 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(Config)  # Load configuration from config.py
-    db.init_app(app)  # Bind the db instance to the app
+    app.config.from_object(Config)  
+    db.init_app(app)  
 
-    # Ensure the database is initialized
+    
     with app.app_context():
         db.metadata.clear() 
         db.create_all()
@@ -62,7 +62,7 @@ def doctor_page():
 
 @app.route('/doctor/patients')
 def get_patients0():
-    patients = Patient.query.all()  # Assuming you're querying all patients
+    patients = Patient.query.all()  
     return jsonify([{'patient_id': p.patient_id, 'name': f"{p.first_name} {p.last_name}"} for p in patients])
 
 @app.route('/doctor/reports/<int:patient_id>')
@@ -90,7 +90,7 @@ def add_report_doctor():
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
 
     try:
-        # Parse form data
+   
         data = request.form
         new_report = Report(
             patient_id=data['patient_id'],
@@ -134,7 +134,7 @@ def logout():
 
 @app.route('/nurse/patients')
 def get_patients1():
-    patients = Patient.query.all()  # Assuming you're querying all patients
+    patients = Patient.query.all()  
     return jsonify([{'patient_id': p.patient_id, 'name': f"{p.first_name} {p.last_name}"} for p in patients])
 
 
@@ -157,7 +157,7 @@ def get_patient_reports1(patient_id):
         'comments': r.comments
     } for r in reports])
 
-@app.route('/nurse/add-report', methods=['POST'])  # Changed from add_report to add-report to match JS
+@app.route('/nurse/add-report', methods=['POST'])  
 def add_report():
     if session.get('role') != 'nurse':
         return jsonify({'success': False, 'error': 'Unauthorized'}), 403
@@ -167,8 +167,8 @@ def add_report():
     if form.validate_on_submit():
         try:
             new_report = Report(
-                patient_id=request.form.get('patient_id'),  # You'll need to add this to your form
-                nurse_id=session.get('user_id'),  # Make sure you store user_id in session during login
+                patient_id=request.form.get('patient_id'),  
+                nurse_id=session.get('user_id'), 
                 report_date=datetime.now(),
                 mood_level=int(form.mood_level.data),
                 anxiety_level=int(form.anxiety_level.data),
@@ -207,7 +207,7 @@ def add_report():
     return jsonify({'success': False, 'error': 'Validation failed', 'errors': form.errors}), 400
 
 @app.route('/nurse/delete_report/<int:report_id>', methods=['DELETE'])
-# @login_required # You can use this decorator to protect the route but it is not working yet
+
 def delete_report(report_id):
     report = Report.query.get(report_id)
     if report:
@@ -229,7 +229,7 @@ def update_report(report_id):
 
         data = request.get_json()
         
-        # Update report fields
+       
         if 'mood_level' in data:
             report.mood_level = int(data['mood_level'])
         if 'anxiety_level' in data:
@@ -272,8 +272,8 @@ def update_report(report_id):
     
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  # Adres e-mail zdefiniowany w zmiennej środowiskowej
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  # Hasło zdefiniowane w zmiennej środowiskowej
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
@@ -283,12 +283,12 @@ def send_prescription(patient_id):
     data = request.get_json()
     prescription_text = data.get('prescription')
     
-    # Pobierz pacjenta z bazy danych
+    
     patient = Patient.query.get(patient_id)
     if not patient:
         return jsonify({'success': False, 'message': 'Pacjent nie znaleziony'}), 404
     
-    # Przygotowanie wiadomości e-mail
+   
     msg = Message('E-Recepta',
                   sender='your_email@gmail.com',
                   recipients=[patient.email])
@@ -312,7 +312,7 @@ def send_prescription(patient_id):
 @app.route('/doctor/instructions/<int:patient_id>', methods=['GET'])
 def get_instructions(patient_id):
     try:
-        # Retrieve the latest instruction for the given patient
+       
         instruction = Instructions.query.filter_by(patient_id=patient_id).order_by(Instructions.created_at.desc()).first()
         
         if instruction:
@@ -324,7 +324,7 @@ def get_instructions(patient_id):
                 "created_at": instruction.created_at.isoformat()
             })
         else:
-            return jsonify([])  # Return an empty list if no instruction exists
+            return jsonify([])  
     except Exception as e:
         print(f"Error fetching instructions: {e}")
         return jsonify({"error": "An error occurred while fetching instructions"}), 500

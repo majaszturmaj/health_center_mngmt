@@ -4,18 +4,18 @@ import datetime
 
 class User(db.Model):
     __tablename__ = 'Users'
-    __table_args__ = {'extend_existing': True}  # Avoid metadata conflict
+    __table_args__ = {'extend_existing': True}  
 
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)  # Storing the password directly
+    password = db.Column(db.String(255), nullable=False)  
     role = db.Column(db.String(20), nullable=False)
 
     def set_password(self, password):
-        self.password = generate_password_hash(password)  # Hash the password before storing
+        self.password = generate_password_hash(password)  
 
     def verify_password(self, password):
-        return check_password_hash(self.password, password)  # Verify hashed password
+        return check_password_hash(self.password, password)  
 
 class Doctor(db.Model):
     __tablename__ = 'Doctors'

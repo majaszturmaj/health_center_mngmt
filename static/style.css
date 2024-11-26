@@ -1,82 +1,82 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    background-color: #f5f5f5; /* Tło strony */
-    background-image: url('images/image2.jpg'); /* Ścieżka do obrazka */
-    background-size: cover; /* Wypełnia całe tło */
-    background-position: center; /* Wyśrodkowanie obrazka */
-    background-repeat: no-repeat; /* Brak powtarzania obrazka */
+    background-color: #f5f5f5;
+    background-image: url('images/image2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .container {
-    max-width: 400px; /* Maksymalna szerokość kontenera */
-    margin: 200px auto; /* Wyśrodkowanie kontenera */
-    padding: 20px; /* Padding wewnętrzny */
-    background-color: white; /* Białe tło */
-    border-radius: 8px; /* Zaokrąglone rogi */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Lekki cień */
+    max-width: 400px;
+    margin: 200px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .header {
-    text-align: center; /* Wyśrodkowanie nagłówka */
-    margin-bottom: 20px; /* Odstęp dolny */
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 h1 {
-    color: #2c3e50; /* Kolor nagłówka */
-    font-family: 'Cinzel', serif; /* Czcionka dla nagłówków */
-    font-weight: 700; /* Pogrubienie */
+    color: #2c3e50;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
 }
 
 h2 {
-    text-align: center; /* Wyśrodkowanie nagłówka logowania */
-    color: #343a40; /* Kolor nagłówka */
-    font-family: 'Cinzel', serif; /* Czcionka dla nagłówków */
-    font-weight: 700; /* Pogrubienie */
+    text-align: center;
+    color: #343a40;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
 }
 
 .form-label {
-    font-weight: normal; /* Zmniejszenie pogrubienia */
-    color: #051525; /* Kolor tekstu */
-    font-size: 1.1rem; /* Zwiększenie rozmiaru czcionki */
+    font-weight: normal;
+    color: #051525;
+    font-size: 1.1rem;
 }
 
 .form-control {
-    width: 95%; /* Szerokość pól formularza */
-    padding: 10px; /* Padding wewnętrzny pól */
-    border: 1px solid #dce4ec; /* Jasne obrabowanie */
-    border-radius: 4px; /* Zaokrąglenie rogów */
-    margin-bottom: 15px; /* Odstęp między polami */
-    transition: border-color 0.2s; /* Efekt przy zmianie koloru obramowania */
+    width: 95%;
+    padding: 10px;
+    border: 1px solid #dce4ec;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    transition: border-color 0.2s;
 }
 
 .form-control:focus {
-    border-color: #007bff; /* Kolor obramowania przy fokusie */
-    outline: none; /* Usuń kontur */
+    border-color: #007bff;
+    outline: none;
 }
 
 .box-przycisk {
-    display: flex; /* Użycie Flexbox */
-    justify-content: center; /* Wyśrodkowanie przycisku */
-    margin-top: 20px; /* Odstęp górny */
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 .submit-btn {
-    background-color: #007bff; /* Kolor przycisku */
-    color: white; /* Kolor tekstu */
-    padding: 10px 20px; /* Padding wewnętrzny */
-    border: none; /* Bez obramowania */
-    border-radius: 4px; /* Zaokrąglenie przycisku */
-    cursor: pointer; /* Zmienienie kursora na wskaźnik */
-    transition: background-color 0.2s; /* Efekt po najechaniu */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .submit-btn:hover {
-    background-color: #0056b3; /* Kolor przycisku po najechaniu */
+    background-color: #0056b3;
 }
 
 .text-center {
-    text-align: center; /* Wyśrodkowanie tekstu */
+    text-align: center;
 }
 
 .chart-container {
@@ -96,7 +96,6 @@ h2 {
     margin-bottom: 16px;
 }
 
-/* Style dla responsywności */
 @media (max-width: 768px) {
     .chart-container {
         height: 300px;
@@ -104,8 +103,8 @@ h2 {
 }
 
 .reports-list {
-    max-height: 400px; /* Set a fixed height */
-    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 400px;
+    overflow-y: auto;
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -113,10 +112,9 @@ h2 {
 }
 
 .instructions-list {
-    margin-top: 20px; /* Space below "Historia Raportów" */
+    margin-top: 20px;
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
